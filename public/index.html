@@ -65,7 +65,7 @@
                             stroke-dasharray="753.98" stroke-dashoffset="753.98" stroke-linecap="round"/>
                     </svg>
                     <div class="absolute inset-0 flex items-center justify-center">
-                        <div id="timerDisplay" class="text-5xl font-semibold text-white transition-colors duration-300">
+                        <div id="timerDisplay" class="text-4xl font-semibold text-white transition-colors duration-300">
                             00:00:00
                         </div>
                     </div>
@@ -135,6 +135,17 @@
                     </svg>
                 </button>
             </div>
+
+            <!-- Testing Mode Setting -->
+            <div class="flex items-center justify-between py-4 border-t border-slate-200 dark:border-slate-700">
+                <div>
+                    <div class="font-medium text-slate-800 dark:text-slate-100">Testing Mode</div>
+                    <div class="text-sm text-slate-500 dark:text-slate-400">Next fast will be 30 seconds</div>
+                </div>
+                <button id="testingModeBtn" class="relative w-12 h-7 rounded-full transition-colors bg-slate-200 dark:bg-slate-600">
+                    <span id="testingModeToggle" class="absolute left-1 top-1 w-5 h-5 bg-white rounded-full shadow transition-transform"></span>
+                </button>
+            </div>
         </div>
     </div>
 
@@ -165,6 +176,7 @@
         let isFasting = false;
         let notificationSent = false;
         let notificationPermission = false;
+        let testingMode = false;
 
         // Cache DOM elements
         const el = {};
@@ -186,6 +198,8 @@
             el.closeHistoryBtn = document.getElementById('closeHistoryBtn');
             el.historyList = document.getElementById('historyList');
             el.durationButtons = document.getElementById('durationButtons');
+            el.testingModeBtn = document.getElementById('testingModeBtn');
+            el.testingModeToggle = document.getElementById('testingModeToggle');
             
             // Generate duration buttons
             createDurationButtons();
@@ -262,7 +276,6 @@
                 if (goalDisplay) {
                     goalDisplay.textContent = hours + 'h';
                 }
-                el.actionButton.onclick = () => startFast(Date.now(), hours);
             }
         }
 
@@ -357,13 +370,61 @@
             el.historyModal.addEventListener('click', (e) => {
                 if (e.target === el.historyModal) closeHistoryModal();
             });
+            el.testingModeBtn.addEventListener('click', toggleTestingMode);
             
             const data = loadData();
             
             if (data && data.currentFast) {
-                startFast(data.currentFast.startTime, data.currentFast.goalHours);
+                // Restore existing fast
+                fastStartTime = data.currentFast.startTime;
+                goalHours = data.currentFast.goalHours;
+                isFasting = true;
+                notificationSent = false;
+                
+                updateDisplay();
+                timerInterval = setInterval(updateDisplay, 1000);
+                
+                updateStatusBadge(true, goalHours);
+                el.actionButton.textContent = 'End Fast';
+                el.actionButton.className = CLASSES.buttonEnd;
             } else {
                 showIdleState();
+            }
+            
+            // Always bind the action button click handler
+            el.actionButton.addEventListener('click', handleActionClick);
+        }
+        
+        function handleActionClick() {
+            if (isFasting) {
+                endFast();
+            } else {
+                if (testingMode) {
+                    // Use 30 seconds (converted to hours) for testing
+                    startFast(Date.now(), 30 / 3600);
+                    // Turn off testing mode after starting
+                    testingMode = false;
+                    updateTestingModeUI();
+                } else {
+                    startFast(Date.now(), goalHours);
+                }
+            }
+        }
+
+        function toggleTestingMode() {
+            testingMode = !testingMode;
+            updateTestingModeUI();
+        }
+
+        function updateTestingModeUI() {
+            if (testingMode) {
+                el.testingModeBtn.classList.remove('bg-slate-200', 'dark:bg-slate-600');
+                el.testingModeBtn.classList.add('bg-emerald-500');
+                el.testingModeToggle.classList.add('translate-x-5');
+            } else {
+                el.testingModeBtn.classList.add('bg-slate-200', 'dark:bg-slate-600');
+                el.testingModeBtn.classList.remove('bg-emerald-500');
+                el.testingModeToggle.classList.remove('translate-x-5');
             }
         }
 
@@ -527,7 +588,6 @@
             updateStatusBadge(true, goalHours);
             el.actionButton.textContent = 'End Fast';
             el.actionButton.className = CLASSES.buttonEnd;
-            el.actionButton.onclick = endFast;
         }
 
         function endFast() {
@@ -552,7 +612,6 @@
             
             el.actionButton.textContent = 'Start Fast';
             el.actionButton.className = CLASSES.buttonStart;
-            el.actionButton.onclick = () => startFast(Date.now(), defaultDuration);
         }
 
         function updateDisplay() {
