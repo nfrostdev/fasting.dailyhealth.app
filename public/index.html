@@ -84,12 +84,14 @@
                         <div id="timerDisplay" class="text-4xl font-semibold text-white transition-colors duration-300 mb-2">
                             00:00:00
                         </div>
-                        <div id="zoneBadge" class="pl-1.5 pr-3 py-1 rounded-full text-sm font-medium flex items-center gap-1" style="background-color: rgba(148, 163, 184, 0.19); color: #94a3b8;">
-                            <span id="zoneIcon">🍽️</span>
-                            <span id="zoneName">Fed</span>
-                        </div>
-                        <div id="zoneDescription" class="text-xs text-slate-400 mt-2">
-                            Digesting food
+                        <div id="zoneContainer">
+                            <div id="zoneBadge" class="pl-1.5 pr-3 py-1 rounded-full text-sm font-medium flex items-center gap-1 mx-auto w-fit" style="background-color: rgba(148, 163, 184, 0.19); color: #94a3b8;">
+                                <span id="zoneIcon">🍽️</span>
+                                <span id="zoneName">Fed</span>
+                            </div>
+                            <div id="zoneDescription" class="text-xs text-slate-400 mt-2 text-center">
+                                Digesting food
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -116,6 +118,11 @@
                     </svg>
                     Settings
                 </button>
+            </div>
+            
+            <!-- Zone Disclaimer -->
+            <div id="zoneDisclaimer" class="text-xs text-slate-500 text-center mt-4">
+                Zone timings are approximate and vary by individual
             </div>
         </div>
     </div>
@@ -144,7 +151,7 @@
             </div>
 
             <!-- Theme Toggle Setting -->
-            <div class="flex items-center justify-between py-4">
+            <div class="flex items-center justify-between py-4 border-b border-slate-200 dark:border-slate-700">
                 <div>
                     <div class="font-medium text-slate-800 dark:text-slate-100">Theme</div>
                     <div class="text-sm text-slate-500 dark:text-slate-400">Choose light or dark mode</div>
@@ -159,8 +166,19 @@
                 </button>
             </div>
 
+            <!-- Show Zones Toggle Setting -->
+            <div class="flex items-center justify-between py-4 border-b border-slate-200 dark:border-slate-700">
+                <div>
+                    <div class="font-medium text-slate-800 dark:text-slate-100">Show Fasting Zones</div>
+                    <div class="text-sm text-slate-500 dark:text-slate-400">Display metabolic zone indicator</div>
+                </div>
+                <button id="showZonesBtn" class="relative w-12 h-7 rounded-full transition-colors bg-emerald-500">
+                    <span id="showZonesToggle" class="absolute left-1 top-1 w-5 h-5 bg-white rounded-full shadow transition-transform translate-x-5"></span>
+                </button>
+            </div>
+
             <!-- Testing Mode Setting -->
-            <div class="flex items-center justify-between py-4 border-t border-slate-200 dark:border-slate-700">
+            <div class="flex items-center justify-between py-4">
                 <div>
                     <div class="font-medium text-slate-800 dark:text-slate-100">Testing Mode</div>
                     <div class="text-sm text-slate-500 dark:text-slate-400">Next fast will be 30 seconds</div>
@@ -201,6 +219,7 @@
         let notificationPermission = false;
         let testingMode = false;
         let currentZoneIndex = 0;
+        let showZones = true;
 
         // Cache DOM elements
         const el = {};
@@ -224,10 +243,14 @@
             el.durationButtons = document.getElementById('durationButtons');
             el.testingModeBtn = document.getElementById('testingModeBtn');
             el.testingModeToggle = document.getElementById('testingModeToggle');
+            el.zoneContainer = document.getElementById('zoneContainer');
             el.zoneBadge = document.getElementById('zoneBadge');
             el.zoneIcon = document.getElementById('zoneIcon');
             el.zoneName = document.getElementById('zoneName');
             el.zoneDescription = document.getElementById('zoneDescription');
+            el.zoneDisclaimer = document.getElementById('zoneDisclaimer');
+            el.showZonesBtn = document.getElementById('showZonesBtn');
+            el.showZonesToggle = document.getElementById('showZonesToggle');
             
             // Generate duration buttons
             createDurationButtons();
@@ -249,13 +272,14 @@
         const MAX_HISTORY = 90;
         
         // Fasting zones configuration (AA compliant colors)
+        // Note: Timings are approximate and vary by individual
         const FASTING_ZONES = [
-            { name: 'Fed', start: 0, end: 4, color: '#94a3b8', icon: '🍽️', description: 'Digesting food' },
-            { name: 'Early Fasting', start: 4, end: 8, color: '#a78bfa', icon: '⏳', description: 'Blood sugar dropping' },
-            { name: 'Fasting', start: 8, end: 12, color: '#60a5fa', icon: '💪', description: 'Glycogen depleting' },
-            { name: 'Fat Burning', start: 12, end: 18, color: '#fbbf24', icon: '🔥', description: 'Ketosis beginning' },
-            { name: 'Ketosis', start: 18, end: 24, color: '#34d399', icon: '⚡', description: 'Deep fat burning' },
-            { name: 'Autophagy', start: 24, end: 48, color: '#f472b6', icon: '✨', description: 'Cellular cleanup' },
+            { name: 'Fed', start: 0, end: 3, color: '#94a3b8', icon: '🍽️', description: 'Digesting food' },
+            { name: 'Post-absorptive', start: 3, end: 8, color: '#a78bfa', icon: '⏳', description: 'Using glucose stores' },
+            { name: 'Glycogen depletion', start: 8, end: 14, color: '#60a5fa', icon: '💪', description: 'Tapping into reserves' },
+            { name: 'Fat burning', start: 14, end: 20, color: '#fbbf24', icon: '🔥', description: 'Increased fat oxidation' },
+            { name: 'Ketosis', start: 20, end: 36, color: '#34d399', icon: '⚡', description: 'Significant ketone production' },
+            { name: 'Deep ketosis', start: 36, end: 72, color: '#f472b6', icon: '✨', description: 'Autophagy may increase' },
         ];
         
         // CSS class constants
@@ -395,6 +419,7 @@
         function init() {
             initElements();
             initTheme();
+            initShowZones();
             requestNotificationPermission();
             registerServiceWorker();
             
@@ -410,6 +435,7 @@
                 if (e.target === el.historyModal) closeHistoryModal();
             });
             el.testingModeBtn.addEventListener('click', toggleTestingMode);
+            el.showZonesBtn.addEventListener('click', toggleShowZones);
             
             const data = loadData();
             
@@ -464,6 +490,53 @@
                 el.testingModeBtn.classList.add('bg-slate-200', 'dark:bg-slate-600');
                 el.testingModeBtn.classList.remove('bg-emerald-500');
                 el.testingModeToggle.classList.remove('translate-x-5');
+            }
+        }
+
+        function initShowZones() {
+            const data = loadData();
+            showZones = data?.settings?.showZones !== false; // Default to true
+            updateShowZonesUI();
+            updateZoneVisibility();
+        }
+
+        function toggleShowZones() {
+            showZones = !showZones;
+            
+            // Save to settings
+            const data = loadData() || { history: [] };
+            data.settings = data.settings || {};
+            data.settings.showZones = showZones;
+            saveData(data);
+            
+            updateShowZonesUI();
+            updateZoneVisibility();
+        }
+
+        function updateShowZonesUI() {
+            if (showZones) {
+                el.showZonesBtn.classList.remove('bg-slate-200', 'dark:bg-slate-600');
+                el.showZonesBtn.classList.add('bg-emerald-500');
+                el.showZonesToggle.classList.add('translate-x-5');
+            } else {
+                el.showZonesBtn.classList.add('bg-slate-200', 'dark:bg-slate-600');
+                el.showZonesBtn.classList.remove('bg-emerald-500');
+                el.showZonesToggle.classList.remove('translate-x-5');
+            }
+        }
+
+        function updateZoneVisibility() {
+            if (showZones) {
+                el.zoneContainer.classList.remove('hidden');
+                el.zoneDisclaimer.classList.remove('hidden');
+                // Update ring to current zone color
+                const zone = FASTING_ZONES[currentZoneIndex >= 0 ? currentZoneIndex : 0];
+                el.progressCircle.style.stroke = zone.color;
+            } else {
+                el.zoneContainer.classList.add('hidden');
+                el.zoneDisclaimer.classList.add('hidden');
+                // Reset ring to default color
+                el.progressCircle.style.stroke = '#10b981';
             }
         }
 
@@ -682,8 +755,12 @@
                 el.zoneName.textContent = zone.name;
                 el.zoneDescription.textContent = zone.description;
                 
-                // Update progress ring color
-                el.progressCircle.style.stroke = zone.color;
+                // Update progress ring color (only if zones are shown)
+                if (showZones) {
+                    el.progressCircle.style.stroke = zone.color;
+                } else {
+                    el.progressCircle.style.stroke = '#10b981'; // Default emerald
+                }
             }
         }
 
