@@ -241,6 +241,7 @@
             statusFasting: 'inline-block px-4 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-full text-sm font-medium transition-colors duration-300',
             statusIdle: 'inline-block px-4 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-full text-sm font-medium transition-colors duration-300',
             buttonEnd: 'w-full border-2 border-white/40 hover:border-white/60 hover:bg-white/10 text-white font-semibold py-4 rounded-xl transition-colors duration-200',
+            buttonComplete: 'w-full border-2 border-emerald-600 bg-emerald-600 hover:bg-emerald-700 hover:border-emerald-700 text-white font-semibold py-4 rounded-xl transition-colors duration-200 shadow-lg',
             buttonStart: 'w-full border-2 border-emerald-600 bg-emerald-600 hover:bg-emerald-700 hover:border-emerald-700 text-white font-semibold py-4 rounded-xl transition-colors duration-200 shadow-lg',
             durationSelected: 'py-3 px-4 rounded-lg border-2 border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 transition-colors text-sm font-medium',
             durationUnselected: 'py-3 px-4 rounded-lg border-2 border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:border-emerald-500 dark:hover:border-emerald-500 transition-colors text-sm font-medium'
@@ -658,6 +659,10 @@
             if (elapsed >= goalMs && !notificationSent) {
                 notificationSent = true;
                 sendNotification('Fasting Goal Reached! 🎉', `You've completed your ${goalHours} hour fast!`);
+                
+                // Update button to show completion
+                el.actionButton.textContent = 'Complete Fast';
+                el.actionButton.className = CLASSES.buttonComplete;
             }
         }
 
