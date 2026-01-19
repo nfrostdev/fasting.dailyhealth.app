@@ -80,9 +80,16 @@
                         <circle id="progressCircle" cx="128" cy="128" r="120" stroke="#10b981" class="transition-all duration-1000 ease-out" stroke-width="8" fill="none"
                             stroke-dasharray="753.98" stroke-dashoffset="753.98" stroke-linecap="round"/>
                     </svg>
-                    <div class="absolute inset-0 flex items-center justify-center">
-                        <div id="timerDisplay" class="text-4xl font-semibold text-white transition-colors duration-300">
+                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                        <div id="timerDisplay" class="text-4xl font-semibold text-white transition-colors duration-300 mb-2">
                             00:00:00
+                        </div>
+                        <div id="zoneBadge" class="pl-1.5 pr-3 py-1 rounded-full text-sm font-medium flex items-center gap-1" style="background-color: rgba(148, 163, 184, 0.19); color: #94a3b8;">
+                            <span id="zoneIcon">🍽️</span>
+                            <span id="zoneName">Fed</span>
+                        </div>
+                        <div id="zoneDescription" class="text-xs text-slate-400 mt-2">
+                            Digesting food
                         </div>
                     </div>
                 </div>
@@ -193,6 +200,7 @@
         let notificationSent = false;
         let notificationPermission = false;
         let testingMode = false;
+        let currentZoneIndex = 0;
 
         // Cache DOM elements
         const el = {};
@@ -216,6 +224,10 @@
             el.durationButtons = document.getElementById('durationButtons');
             el.testingModeBtn = document.getElementById('testingModeBtn');
             el.testingModeToggle = document.getElementById('testingModeToggle');
+            el.zoneBadge = document.getElementById('zoneBadge');
+            el.zoneIcon = document.getElementById('zoneIcon');
+            el.zoneName = document.getElementById('zoneName');
+            el.zoneDescription = document.getElementById('zoneDescription');
             
             // Generate duration buttons
             createDurationButtons();
@@ -235,6 +247,16 @@
         const STORAGE_KEY = 'fastingApp';
         const DURATION_OPTIONS = [12, 14, 16, 18, 20, 24];
         const MAX_HISTORY = 90;
+        
+        // Fasting zones configuration (AA compliant colors)
+        const FASTING_ZONES = [
+            { name: 'Fed', start: 0, end: 4, color: '#94a3b8', icon: '🍽️', description: 'Digesting food' },
+            { name: 'Early Fasting', start: 4, end: 8, color: '#a78bfa', icon: '⏳', description: 'Blood sugar dropping' },
+            { name: 'Fasting', start: 8, end: 12, color: '#60a5fa', icon: '💪', description: 'Glycogen depleting' },
+            { name: 'Fat Burning', start: 12, end: 18, color: '#fbbf24', icon: '🔥', description: 'Ketosis beginning' },
+            { name: 'Ketosis', start: 18, end: 24, color: '#34d399', icon: '⚡', description: 'Deep fat burning' },
+            { name: 'Autophagy', start: 24, end: 48, color: '#f472b6', icon: '✨', description: 'Cellular cleanup' },
+        ];
         
         // CSS class constants
         const CLASSES = {
@@ -626,9 +648,43 @@
             updateStatusBadge(false, defaultDuration);
             el.timerDisplay.textContent = '00:00:00';
             el.progressCircle.style.strokeDashoffset = CIRCUMFERENCE;
+            el.progressCircle.style.stroke = '#10b981'; // Reset to default emerald
             
             el.actionButton.textContent = 'Start Fast';
             el.actionButton.className = CLASSES.buttonStart;
+            
+            // Reset zone display
+            currentZoneIndex = -1; // Force update
+            updateZoneDisplay(0);
+        }
+
+        function getCurrentZone(elapsedHours) {
+            for (let i = FASTING_ZONES.length - 1; i >= 0; i--) {
+                if (elapsedHours >= FASTING_ZONES[i].start) {
+                    return i;
+                }
+            }
+            return 0;
+        }
+
+        function updateZoneDisplay(elapsedHours) {
+            const zoneIndex = getCurrentZone(elapsedHours);
+            
+            // Only update DOM if zone changed
+            if (zoneIndex !== currentZoneIndex || elapsedHours === 0) {
+                currentZoneIndex = zoneIndex;
+                const zone = FASTING_ZONES[zoneIndex];
+                
+                // Update zone badge
+                el.zoneBadge.style.backgroundColor = zone.color + '30';
+                el.zoneBadge.style.color = zone.color;
+                el.zoneIcon.textContent = zone.icon;
+                el.zoneName.textContent = zone.name;
+                el.zoneDescription.textContent = zone.description;
+                
+                // Update progress ring color
+                el.progressCircle.style.stroke = zone.color;
+            }
         }
 
         function updateDisplay() {
@@ -654,6 +710,10 @@
             const progress = Math.min((elapsed / goalMs) * 100, 100);
             const offset = CIRCUMFERENCE - (progress / 100) * CIRCUMFERENCE;
             el.progressCircle.style.strokeDashoffset = offset;
+            
+            // Update fasting zone
+            const elapsedHours = elapsed / MS_PER_HOUR;
+            updateZoneDisplay(elapsedHours);
             
             // Check if goal reached and send notification
             if (elapsed >= goalMs && !notificationSent) {
