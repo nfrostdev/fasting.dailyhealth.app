@@ -1,6 +1,6 @@
 {
   "name": "Fasting Timer",
-  "short_name": "Fasting",
+  "short_name": "Fasting Timer",
   "description": "Simple, privacy-focused intermittent fasting tracker",
   "start_url": "/",
   "display": "standalone",
