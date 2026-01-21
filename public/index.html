@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <!-- Primary Meta Tags -->
     <title>Fasting Timer - Simple Privacy-Focused Intermittent Fasting Tracker</title>
     <meta name="title" content="Fasting Timer - Simple Privacy-Focused Intermittent Fasting Tracker">
@@ -12,26 +12,26 @@
     <meta name="robots" content="index, follow">
     <meta name="language" content="English">
     <meta name="author" content="Fasting Timer">
-    
+
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://fasting.dailyhealth.app/">
     <meta property="og:title" content="Fasting Timer - Simple Privacy-Focused Intermittent Fasting Tracker">
     <meta property="og:description" content="Free, privacy-focused intermittent fasting tracker. No sign-up, no tracking, all data stored locally. Track 16:8, 18:6, OMAD and custom fasting schedules.">
     <meta property="og:image" content="https://fasting.dailyhealth.app/icons/icon-512.png">
-    
+
     <!-- Twitter -->
     <meta name="twitter:card" content="summary">
     <meta name="twitter:url" content="https://fasting.dailyhealth.app/">
     <meta name="twitter:title" content="Fasting Timer - Simple Privacy-Focused Intermittent Fasting Tracker">
     <meta name="twitter:description" content="Free, privacy-focused intermittent fasting tracker. No sign-up, no tracking, all data stored locally. Track 16:8, 18:6, OMAD and custom fasting schedules.">
     <meta name="twitter:image" content="https://fasting.dailyhealth.app/icons/icon-512.png">
-    
+
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16.png">
-    
+
     <!-- PWA -->
     <meta name="theme-color" content="#0f172a">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -46,7 +46,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -62,489 +62,489 @@
     </script>
 </head>
 <body class="bg-gradient-to-br from-slate-900 to-slate-800 dark:from-slate-950 dark:to-slate-900 min-h-screen flex items-center justify-center p-4 transition-colors duration-300">
-    <div class="w-full max-w-md">
-        <!-- Main Timer Content -->
-        <div class="p-8 text-center transition-colors duration-300">
-            <!-- Status Badge -->
-            <div class="mb-6">
+<div class="w-full max-w-md">
+    <!-- Main Timer Content -->
+    <div class="p-8 text-center transition-colors duration-300">
+        <!-- Status Badge -->
+        <div class="mb-6">
                 <span id="statusBadge" class="inline-block px-4 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-full text-sm font-medium transition-colors duration-300">
                     <span id="statusText">Fasting</span> · <span id="goalDisplay">16h</span>
                 </span>
-            </div>
+        </div>
 
-            <!-- Progress Circle with Timer -->
-            <div class="mb-8 flex justify-center">
-                <div class="relative w-64 h-64">
-                    <svg class="transform -rotate-90 w-64 h-64">
-                        <circle cx="128" cy="128" r="120" stroke="#e2e8f0" class="dark:stroke-slate-700 transition-colors duration-300" stroke-width="8" fill="none"/>
-                        <circle id="progressCircle" cx="128" cy="128" r="120" stroke="#10b981" class="transition-all duration-1000 ease-out" stroke-width="8" fill="none"
+        <!-- Progress Circle with Timer -->
+        <div class="mb-8 flex justify-center">
+            <div class="relative w-64 h-64">
+                <svg class="transform -rotate-90 w-64 h-64">
+                    <circle cx="128" cy="128" r="120" stroke="#e2e8f0" class="dark:stroke-slate-700 transition-colors duration-300" stroke-width="8" fill="none"/>
+                    <circle id="progressCircle" cx="128" cy="128" r="120" stroke="#10b981" class="transition-all duration-1000 ease-out" stroke-width="8" fill="none"
                             stroke-dasharray="753.98" stroke-dashoffset="753.98" stroke-linecap="round"/>
-                    </svg>
-                    <div class="absolute inset-0 flex flex-col items-center justify-center">
-                        <div id="timerDisplay" class="text-4xl font-semibold text-white transition-colors duration-300 mb-2">
-                            00:00:00
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                    <div id="timerDisplay" class="text-4xl font-semibold text-white transition-colors duration-300 mb-2">
+                        00:00:00
+                    </div>
+                    <div id="zoneContainer">
+                        <div id="zoneBadge" class="pl-1.5 pr-3 py-1 rounded-full text-sm font-medium flex items-center gap-1 mx-auto w-fit" style="background-color: rgba(148, 163, 184, 0.19); color: #94a3b8;">
+                            <span id="zoneIcon">🍽️</span>
+                            <span id="zoneName">Fed</span>
                         </div>
-                        <div id="zoneContainer">
-                            <div id="zoneBadge" class="pl-1.5 pr-3 py-1 rounded-full text-sm font-medium flex items-center gap-1 mx-auto w-fit" style="background-color: rgba(148, 163, 184, 0.19); color: #94a3b8;">
-                                <span id="zoneIcon">🍽️</span>
-                                <span id="zoneName">Fed</span>
-                            </div>
-                            <div id="zoneDescription" class="text-xs text-slate-400 mt-2 text-center">
-                                Digesting food
-                            </div>
+                        <div id="zoneDescription" class="text-xs text-slate-400 mt-2 text-center">
+                            Digesting food
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Action Button -->
-            <button id="actionButton" 
+        <!-- Action Button -->
+        <button id="actionButton"
                 class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 rounded-xl transition-colors duration-200 shadow-lg">
-                End Fast
+            End Fast
+        </button>
+
+        <!-- Secondary Actions -->
+        <div class="mt-4 flex gap-2">
+            <button id="historyBtn" class="flex-1 flex items-center justify-center gap-2 text-white/90 border-2 border-white/30 hover:border-white/50 hover:bg-white/5 text-sm font-medium py-3 px-4 rounded-xl transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                History
             </button>
+            <button id="settingsBtn" class="flex-1 flex items-center justify-center gap-2 text-white/90 border-2 border-white/30 hover:border-white/50 hover:bg-white/5 text-sm font-medium py-3 px-4 rounded-xl transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                Settings
+            </button>
+        </div>
 
-            <!-- Secondary Actions -->
-            <div class="mt-4 flex gap-2">
-                <button id="historyBtn" class="flex-1 flex items-center justify-center gap-2 text-white/90 border-2 border-white/30 hover:border-white/50 hover:bg-white/5 text-sm font-medium py-3 px-4 rounded-xl transition-colors">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    History
-                </button>
-                <button id="settingsBtn" class="flex-1 flex items-center justify-center gap-2 text-white/90 border-2 border-white/30 hover:border-white/50 hover:bg-white/5 text-sm font-medium py-3 px-4 rounded-xl transition-colors">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                    </svg>
-                    Settings
-                </button>
-            </div>
-            
-            <!-- Zone Disclaimer -->
-            <div id="zoneDisclaimer" class="text-xs text-slate-500 text-center mt-4">
-                Zone timings are approximate and vary by individual
-            </div>
+        <!-- Zone Disclaimer -->
+        <div id="zoneDisclaimer" class="text-xs text-slate-500 text-center mt-4">
+            Zone timings are approximate and vary by individual
         </div>
     </div>
+</div>
 
-    <!-- Settings Modal -->
-    <div id="settingsModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-8 z-50">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6 m-6 transition-colors duration-300">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-100">Settings</h2>
-                <button id="closeModalBtn" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </button>
-            </div>
-            
-            <!-- Fasting Duration Setting -->
-            <div class="py-4 border-b border-slate-200 dark:border-slate-700">
-                <div class="mb-3">
-                    <div class="font-medium text-slate-800 dark:text-slate-100">Default Fasting Duration</div>
-                    <div class="text-sm text-slate-500 dark:text-slate-400">Choose your typical fasting goal</div>
-                </div>
-                <div id="durationButtons" class="grid grid-cols-3 gap-2">
-                    <!-- Duration buttons will be generated here -->
-                </div>
-            </div>
+<!-- Settings Modal -->
+<div id="settingsModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-8 z-50">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6 m-6 transition-colors duration-300">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-100">Settings</h2>
+            <button id="closeModalBtn" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
 
-            <!-- Theme Toggle Setting -->
-            <div class="flex items-center justify-between py-4 border-b border-slate-200 dark:border-slate-700">
-                <div>
-                    <div class="font-medium text-slate-800 dark:text-slate-100">Theme</div>
-                    <div class="text-sm text-slate-500 dark:text-slate-400">Choose light or dark mode</div>
-                </div>
-                <button id="themeToggleBtn" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
-                    <svg id="sunIcon" class="w-6 h-6 text-slate-800 dark:text-slate-100 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
-                    </svg>
-                    <svg id="moonIcon" class="w-6 h-6 text-slate-800 dark:text-slate-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
-                    </svg>
-                </button>
+        <!-- Fasting Duration Setting -->
+        <div class="py-4 border-b border-slate-200 dark:border-slate-700">
+            <div class="mb-3">
+                <div class="font-medium text-slate-800 dark:text-slate-100">Default Fasting Duration</div>
+                <div class="text-sm text-slate-500 dark:text-slate-400">Choose your typical fasting goal</div>
             </div>
-
-            <!-- Show Zones Toggle Setting -->
-            <div class="flex items-center justify-between py-4 border-b border-slate-200 dark:border-slate-700">
-                <div>
-                    <div class="font-medium text-slate-800 dark:text-slate-100">Show Fasting Zones</div>
-                    <div class="text-sm text-slate-500 dark:text-slate-400">Display metabolic zone indicator</div>
-                </div>
-                <button id="showZonesBtn" class="relative w-12 h-7 rounded-full transition-colors bg-emerald-500">
-                    <span id="showZonesToggle" class="absolute left-1 top-1 w-5 h-5 bg-white rounded-full shadow transition-transform translate-x-5"></span>
-                </button>
-            </div>
-
-            <!-- Testing Mode Setting -->
-            <div class="flex items-center justify-between py-4">
-                <div>
-                    <div class="font-medium text-slate-800 dark:text-slate-100">Testing Mode</div>
-                    <div class="text-sm text-slate-500 dark:text-slate-400">Next fast will be 30 seconds</div>
-                </div>
-                <button id="testingModeBtn" class="relative w-12 h-7 rounded-full transition-colors bg-slate-200 dark:bg-slate-600">
-                    <span id="testingModeToggle" class="absolute left-1 top-1 w-5 h-5 bg-white rounded-full shadow transition-transform"></span>
-                </button>
+            <div id="durationButtons" class="grid grid-cols-3 gap-2">
+                <!-- Duration buttons will be generated here -->
             </div>
         </div>
-    </div>
 
-    <!-- History Modal -->
-    <div id="historyModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-8 z-50">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6 m-6 transition-colors duration-300 max-h-[80vh] flex flex-col">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-100">History</h2>
-                <button id="closeHistoryBtn" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </button>
+        <!-- Theme Toggle Setting -->
+        <div class="flex items-center justify-between py-4 border-b border-slate-200 dark:border-slate-700">
+            <div>
+                <div class="font-medium text-slate-800 dark:text-slate-100">Theme</div>
+                <div class="text-sm text-slate-500 dark:text-slate-400">Choose light or dark mode</div>
             </div>
-            
-            <!-- History List -->
-            <div id="historyList" class="overflow-y-auto flex-1 pr-4">
-                <!-- History items will be inserted here -->
+            <button id="themeToggleBtn" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+                <svg id="sunIcon" class="w-6 h-6 text-slate-800 dark:text-slate-100 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                </svg>
+                <svg id="moonIcon" class="w-6 h-6 text-slate-800 dark:text-slate-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Show Zones Toggle Setting -->
+        <div class="flex items-center justify-between py-4 border-b border-slate-200 dark:border-slate-700">
+            <div>
+                <div class="font-medium text-slate-800 dark:text-slate-100">Show Fasting Zones</div>
+                <div class="text-sm text-slate-500 dark:text-slate-400">Display metabolic zone indicator</div>
             </div>
+            <button id="showZonesBtn" class="relative w-12 h-7 rounded-full transition-colors bg-emerald-500">
+                <span id="showZonesToggle" class="absolute left-1 top-1 w-5 h-5 bg-white rounded-full shadow transition-transform translate-x-5"></span>
+            </button>
+        </div>
+
+        <!-- Testing Mode Setting -->
+        <div class="flex items-center justify-between py-4">
+            <div>
+                <div class="font-medium text-slate-800 dark:text-slate-100">Testing Mode</div>
+                <div class="text-sm text-slate-500 dark:text-slate-400">Next fast will be 30 seconds</div>
+            </div>
+            <button id="testingModeBtn" class="relative w-12 h-7 rounded-full transition-colors bg-slate-200 dark:bg-slate-600">
+                <span id="testingModeToggle" class="absolute left-1 top-1 w-5 h-5 bg-white rounded-full shadow transition-transform"></span>
+            </button>
         </div>
     </div>
+</div>
 
-    <script>
-        // State
-        let fastStartTime = null;
-        let goalHours = 16;
-        let timerInterval = null;
-        let isFasting = false;
-        let notificationSent = false;
-        let notificationPermission = false;
-        let testingMode = false;
-        let currentZoneIndex = 0;
-        let showZones = true;
+<!-- History Modal -->
+<div id="historyModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-8 z-50">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6 m-6 transition-colors duration-300 max-h-[80vh] flex flex-col">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-100">History</h2>
+            <button id="closeHistoryBtn" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
 
-        // Cache DOM elements
-        const el = {};
-        
-        function initElements() {
-            el.statusBadge = document.getElementById('statusBadge');
-            el.timerDisplay = document.getElementById('timerDisplay');
-            el.goalDisplay = document.getElementById('goalDisplay');
-            el.progressCircle = document.getElementById('progressCircle');
-            el.actionButton = document.getElementById('actionButton');
-            el.themeToggleBtn = document.getElementById('themeToggleBtn');
-            el.sunIcon = document.getElementById('sunIcon');
-            el.moonIcon = document.getElementById('moonIcon');
-            el.settingsBtn = document.getElementById('settingsBtn');
-            el.settingsModal = document.getElementById('settingsModal');
-            el.closeModalBtn = document.getElementById('closeModalBtn');
-            el.historyBtn = document.getElementById('historyBtn');
-            el.historyModal = document.getElementById('historyModal');
-            el.closeHistoryBtn = document.getElementById('closeHistoryBtn');
-            el.historyList = document.getElementById('historyList');
-            el.durationButtons = document.getElementById('durationButtons');
-            el.testingModeBtn = document.getElementById('testingModeBtn');
-            el.testingModeToggle = document.getElementById('testingModeToggle');
-            el.zoneContainer = document.getElementById('zoneContainer');
-            el.zoneBadge = document.getElementById('zoneBadge');
-            el.zoneIcon = document.getElementById('zoneIcon');
-            el.zoneName = document.getElementById('zoneName');
-            el.zoneDescription = document.getElementById('zoneDescription');
-            el.zoneDisclaimer = document.getElementById('zoneDisclaimer');
-            el.showZonesBtn = document.getElementById('showZonesBtn');
-            el.showZonesToggle = document.getElementById('showZonesToggle');
-            
-            // Generate duration buttons
-            createDurationButtons();
-        }
+        <!-- History List -->
+        <div id="historyList" class="overflow-y-auto flex-1 pr-4">
+            <!-- History items will be inserted here -->
+        </div>
+    </div>
+</div>
 
-        function createDurationButtons() {
-            el.durationButtons.innerHTML = DURATION_OPTIONS.map(hours => `
+<script>
+    // State
+    let fastStartTime = null;
+    let goalHours = 16;
+    let timerInterval = null;
+    let isFasting = false;
+    let notificationSent = false;
+    let notificationPermission = false;
+    let testingMode = false;
+    let currentZoneIndex = 0;
+    let showZones = true;
+
+    // Cache DOM elements
+    const el = {};
+
+    function initElements() {
+        el.statusBadge = document.getElementById('statusBadge');
+        el.timerDisplay = document.getElementById('timerDisplay');
+        el.goalDisplay = document.getElementById('goalDisplay');
+        el.progressCircle = document.getElementById('progressCircle');
+        el.actionButton = document.getElementById('actionButton');
+        el.themeToggleBtn = document.getElementById('themeToggleBtn');
+        el.sunIcon = document.getElementById('sunIcon');
+        el.moonIcon = document.getElementById('moonIcon');
+        el.settingsBtn = document.getElementById('settingsBtn');
+        el.settingsModal = document.getElementById('settingsModal');
+        el.closeModalBtn = document.getElementById('closeModalBtn');
+        el.historyBtn = document.getElementById('historyBtn');
+        el.historyModal = document.getElementById('historyModal');
+        el.closeHistoryBtn = document.getElementById('closeHistoryBtn');
+        el.historyList = document.getElementById('historyList');
+        el.durationButtons = document.getElementById('durationButtons');
+        el.testingModeBtn = document.getElementById('testingModeBtn');
+        el.testingModeToggle = document.getElementById('testingModeToggle');
+        el.zoneContainer = document.getElementById('zoneContainer');
+        el.zoneBadge = document.getElementById('zoneBadge');
+        el.zoneIcon = document.getElementById('zoneIcon');
+        el.zoneName = document.getElementById('zoneName');
+        el.zoneDescription = document.getElementById('zoneDescription');
+        el.zoneDisclaimer = document.getElementById('zoneDisclaimer');
+        el.showZonesBtn = document.getElementById('showZonesBtn');
+        el.showZonesToggle = document.getElementById('showZonesToggle');
+
+        // Generate duration buttons
+        createDurationButtons();
+    }
+
+    function createDurationButtons() {
+        el.durationButtons.innerHTML = DURATION_OPTIONS.map(hours => `
                 <button onclick="setDefaultDuration(${hours})" id="duration-${hours}" class="${CLASSES.durationUnselected}">
                     ${hours}h
                 </button>
             `).join('');
-        }
+    }
 
-        // Constants
-        const CIRCUMFERENCE = 753.98;
-        const MS_PER_HOUR = 3600000;
-        const STORAGE_KEY = 'fastingApp';
-        const DURATION_OPTIONS = [12, 14, 16, 18, 20, 24];
-        const MAX_HISTORY = 90;
-        
-        // Fasting zones configuration (AA compliant colors)
-        // Note: Timings are approximate and vary by individual
-        const FASTING_ZONES = [
-            { name: 'Fed', start: 0, end: 3, color: '#94a3b8', icon: '🍽️', description: 'Digesting food' },
-            { name: 'Post-absorptive', start: 3, end: 8, color: '#a78bfa', icon: '⏳', description: 'Using glucose stores' },
-            { name: 'Glycogen depletion', start: 8, end: 14, color: '#60a5fa', icon: '💪', description: 'Tapping into reserves' },
-            { name: 'Fat burning', start: 14, end: 20, color: '#fbbf24', icon: '🔥', description: 'Increased fat oxidation' },
-            { name: 'Ketosis', start: 20, end: 36, color: '#34d399', icon: '⚡', description: 'Significant ketone production' },
-            { name: 'Deep ketosis', start: 36, end: 72, color: '#f472b6', icon: '✨', description: 'Autophagy may increase' },
-        ];
-        
-        // CSS class constants
-        const CLASSES = {
-            statusFasting: 'inline-block px-4 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-full text-sm font-medium transition-colors duration-300',
-            statusIdle: 'inline-block px-4 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-full text-sm font-medium transition-colors duration-300',
-            buttonEnd: 'w-full border-2 border-white/40 hover:border-white/60 hover:bg-white/10 text-white font-semibold py-4 rounded-xl transition-colors duration-200',
-            buttonComplete: 'w-full border-2 border-emerald-600 bg-emerald-600 hover:bg-emerald-700 hover:border-emerald-700 text-white font-semibold py-4 rounded-xl transition-colors duration-200 shadow-lg',
-            buttonStart: 'w-full border-2 border-emerald-600 bg-emerald-600 hover:bg-emerald-700 hover:border-emerald-700 text-white font-semibold py-4 rounded-xl transition-colors duration-200 shadow-lg',
-            durationSelected: 'py-3 px-4 rounded-lg border-2 border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 transition-colors text-sm font-medium',
-            durationUnselected: 'py-3 px-4 rounded-lg border-2 border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:border-emerald-500 dark:hover:border-emerald-500 transition-colors text-sm font-medium'
+    // Constants
+    const CIRCUMFERENCE = 753.98;
+    const MS_PER_HOUR = 3600000;
+    const STORAGE_KEY = 'fastingApp';
+    const DURATION_OPTIONS = [12, 14, 16, 18, 20, 24];
+    const MAX_HISTORY = 90;
+
+    // Fasting zones configuration (AA compliant colors)
+    // Note: Timings are approximate and vary by individual
+    const FASTING_ZONES = [
+        { name: 'Fed', start: 0, end: 3, color: '#94a3b8', icon: '🍽️', description: 'Digesting food' },
+        { name: 'Post-absorptive', start: 3, end: 8, color: '#a78bfa', icon: '⏳', description: 'Using glucose stores' },
+        { name: 'Glycogen depletion', start: 8, end: 14, color: '#60a5fa', icon: '💪', description: 'Tapping into reserves' },
+        { name: 'Fat burning', start: 14, end: 20, color: '#fbbf24', icon: '🔥', description: 'Increased fat oxidation' },
+        { name: 'Ketosis', start: 20, end: 36, color: '#34d399', icon: '⚡', description: 'Significant ketone production' },
+        { name: 'Deep ketosis', start: 36, end: 72, color: '#f472b6', icon: '✨', description: 'Autophagy may increase' },
+    ];
+
+    // CSS class constants
+    const CLASSES = {
+        statusFasting: 'inline-block px-4 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-full text-sm font-medium transition-colors duration-300',
+        statusIdle: 'inline-block px-4 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-full text-sm font-medium transition-colors duration-300',
+        buttonEnd: 'w-full border-2 border-white/40 hover:border-white/60 hover:bg-white/10 text-white font-semibold py-4 rounded-xl transition-colors duration-200',
+        buttonComplete: 'w-full border-2 border-emerald-600 bg-emerald-600 hover:bg-emerald-700 hover:border-emerald-700 text-white font-semibold py-4 rounded-xl transition-colors duration-200 shadow-lg',
+        buttonStart: 'w-full border-2 border-emerald-600 bg-emerald-600 hover:bg-emerald-700 hover:border-emerald-700 text-white font-semibold py-4 rounded-xl transition-colors duration-200 shadow-lg',
+        durationSelected: 'py-3 px-4 rounded-lg border-2 border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 transition-colors text-sm font-medium',
+        durationUnselected: 'py-3 px-4 rounded-lg border-2 border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:border-emerald-500 dark:hover:border-emerald-500 transition-colors text-sm font-medium'
+    };
+
+    // Theme management
+    function initTheme() {
+        const data = loadData();
+        const theme = data?.settings?.theme || 'dark';
+        if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
+            el.sunIcon.classList.remove('hidden');
+            el.moonIcon.classList.add('hidden');
+        } else {
+            document.documentElement.classList.remove('dark');
+            el.sunIcon.classList.add('hidden');
+            el.moonIcon.classList.remove('hidden');
+        }
+    }
+
+    function toggleTheme() {
+        const isDark = document.documentElement.classList.toggle('dark');
+        el.sunIcon.classList.toggle('hidden');
+        el.moonIcon.classList.toggle('hidden');
+
+        const data = loadData() || { history: [] };
+        data.settings = data.settings || {};
+        data.settings.theme = isDark ? 'dark' : 'light';
+        saveData(data);
+    }
+
+    function getDefaultDuration() {
+        const data = loadData();
+        return data?.settings?.defaultDuration || 16;
+    }
+
+    function setDefaultDuration(hours) {
+        const data = loadData() || { history: [] };
+        data.settings = data.settings || {};
+        data.settings.defaultDuration = hours;
+        saveData(data);
+
+        updateDurationButtons(hours);
+
+        // Update goal display if not currently fasting
+        if (!isFasting) {
+            goalHours = hours;
+            const goalDisplay = el.statusBadge.querySelector('#goalDisplay');
+            if (goalDisplay) {
+                goalDisplay.textContent = hours + 'h';
+            }
+        }
+    }
+
+    function updateStatusBadge(isFasting, hours) {
+        const text = isFasting ? 'Fasting' : 'Not Fasting';
+        el.statusBadge.innerHTML = `<span id="statusText">${text}</span> · <span id="goalDisplay">${hours}h</span>`;
+        el.statusBadge.className = isFasting ? CLASSES.statusFasting : CLASSES.statusIdle;
+    }
+
+    function updateDurationButtons(selectedHours) {
+        DURATION_OPTIONS.forEach(hours => {
+            const btn = document.getElementById(`duration-${hours}`);
+            if (btn) {
+                btn.className = hours === selectedHours ? CLASSES.durationSelected : CLASSES.durationUnselected;
+            }
+        });
+    }
+
+    // Make setDefaultDuration available globally
+    window.setDefaultDuration = setDefaultDuration;
+
+    // LocalStorage helpers
+    function loadData() {
+        try {
+            const data = localStorage.getItem(STORAGE_KEY);
+            return data ? JSON.parse(data) : null;
+        } catch (e) {
+            console.error('Error loading data:', e);
+            return null;
+        }
+    }
+
+    function saveData(data) {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        } catch (e) {
+            console.error('Error saving data:', e);
+        }
+    }
+
+    function clearCurrentFast() {
+        const data = loadData() || { history: [] };
+        data.currentFast = null;
+        saveData(data);
+    }
+
+    function saveCurrentFast() {
+        const data = loadData() || { history: [] };
+        data.currentFast = {
+            startTime: fastStartTime,
+            goalHours: goalHours
         };
+        saveData(data);
+    }
 
-        // Theme management
-        function initTheme() {
-            const data = loadData();
-            const theme = data?.settings?.theme || 'dark';
-            if (theme === 'dark') {
-                document.documentElement.classList.add('dark');
-                el.sunIcon.classList.remove('hidden');
-                el.moonIcon.classList.add('hidden');
-            } else {
-                document.documentElement.classList.remove('dark');
-                el.sunIcon.classList.add('hidden');
-                el.moonIcon.classList.remove('hidden');
-            }
+    function saveFastToHistory(startTime, endTime, goalHours) {
+        const data = loadData() || { history: [] };
+        const duration = (endTime - startTime) / MS_PER_HOUR;
+
+        data.history = data.history || [];
+        data.history.push({
+            id: Date.now(),
+            startTime: startTime,
+            endTime: endTime,
+            duration: duration,
+            goalHours: goalHours
+        });
+
+        // Keep only last 90 fasts
+        if (data.history.length > MAX_HISTORY) {
+            data.history = data.history.slice(-MAX_HISTORY);
         }
 
-        function toggleTheme() {
-            const isDark = document.documentElement.classList.toggle('dark');
-            el.sunIcon.classList.toggle('hidden');
-            el.moonIcon.classList.toggle('hidden');
-            
-            const data = loadData() || { history: [] };
-            data.settings = data.settings || {};
-            data.settings.theme = isDark ? 'dark' : 'light';
-            saveData(data);
+        saveData(data);
+    }
+
+    // Initialize
+    function init() {
+        initElements();
+        initTheme();
+        initShowZones();
+        requestNotificationPermission();
+        registerServiceWorker();
+
+        el.themeToggleBtn.addEventListener('click', toggleTheme);
+        el.settingsBtn.addEventListener('click', openSettingsModal);
+        el.closeModalBtn.addEventListener('click', closeSettingsModal);
+        el.settingsModal.addEventListener('click', (e) => {
+            if (e.target === el.settingsModal) closeSettingsModal();
+        });
+        el.historyBtn.addEventListener('click', openHistoryModal);
+        el.closeHistoryBtn.addEventListener('click', closeHistoryModal);
+        el.historyModal.addEventListener('click', (e) => {
+            if (e.target === el.historyModal) closeHistoryModal();
+        });
+        el.testingModeBtn.addEventListener('click', toggleTestingMode);
+        el.showZonesBtn.addEventListener('click', toggleShowZones);
+
+        const data = loadData();
+
+        if (data && data.currentFast) {
+            // Restore existing fast
+            fastStartTime = data.currentFast.startTime;
+            goalHours = data.currentFast.goalHours;
+            isFasting = true;
+            notificationSent = false;
+
+            updateDisplay();
+            timerInterval = setInterval(updateDisplay, 1000);
+
+            updateStatusBadge(true, goalHours);
+            el.actionButton.textContent = 'End Fast';
+            el.actionButton.className = CLASSES.buttonEnd;
+        } else {
+            showIdleState();
         }
 
-        function getDefaultDuration() {
-            const data = loadData();
-            return data?.settings?.defaultDuration || 16;
-        }
+        // Always bind the action button click handler
+        el.actionButton.addEventListener('click', handleActionClick);
+    }
 
-        function setDefaultDuration(hours) {
-            const data = loadData() || { history: [] };
-            data.settings = data.settings || {};
-            data.settings.defaultDuration = hours;
-            saveData(data);
-            
-            updateDurationButtons(hours);
-            
-            // Update goal display if not currently fasting
-            if (!isFasting) {
-                goalHours = hours;
-                const goalDisplay = el.statusBadge.querySelector('#goalDisplay');
-                if (goalDisplay) {
-                    goalDisplay.textContent = hours + 'h';
-                }
-            }
-        }
-
-        function updateStatusBadge(isFasting, hours) {
-            const text = isFasting ? 'Fasting' : 'Not Fasting';
-            el.statusBadge.innerHTML = `<span id="statusText">${text}</span> · <span id="goalDisplay">${hours}h</span>`;
-            el.statusBadge.className = isFasting ? CLASSES.statusFasting : CLASSES.statusIdle;
-        }
-
-        function updateDurationButtons(selectedHours) {
-            DURATION_OPTIONS.forEach(hours => {
-                const btn = document.getElementById(`duration-${hours}`);
-                if (btn) {
-                    btn.className = hours === selectedHours ? CLASSES.durationSelected : CLASSES.durationUnselected;
-                }
-            });
-        }
-
-        // Make setDefaultDuration available globally
-        window.setDefaultDuration = setDefaultDuration;
-
-        // LocalStorage helpers
-        function loadData() {
-            try {
-                const data = localStorage.getItem(STORAGE_KEY);
-                return data ? JSON.parse(data) : null;
-            } catch (e) {
-                console.error('Error loading data:', e);
-                return null;
-            }
-        }
-
-        function saveData(data) {
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-            } catch (e) {
-                console.error('Error saving data:', e);
-            }
-        }
-
-        function clearCurrentFast() {
-            const data = loadData() || { history: [] };
-            data.currentFast = null;
-            saveData(data);
-        }
-
-        function saveCurrentFast() {
-            const data = loadData() || { history: [] };
-            data.currentFast = {
-                startTime: fastStartTime,
-                goalHours: goalHours
-            };
-            saveData(data);
-        }
-
-        function saveFastToHistory(startTime, endTime, goalHours) {
-            const data = loadData() || { history: [] };
-            const duration = (endTime - startTime) / MS_PER_HOUR;
-            
-            data.history = data.history || [];
-            data.history.push({
-                id: Date.now(),
-                startTime: startTime,
-                endTime: endTime,
-                duration: duration,
-                goalHours: goalHours
-            });
-            
-            // Keep only last 90 fasts
-            if (data.history.length > MAX_HISTORY) {
-                data.history = data.history.slice(-MAX_HISTORY);
-            }
-            
-            saveData(data);
-        }
-
-        // Initialize
-        function init() {
-            initElements();
-            initTheme();
-            initShowZones();
-            requestNotificationPermission();
-            registerServiceWorker();
-            
-            el.themeToggleBtn.addEventListener('click', toggleTheme);
-            el.settingsBtn.addEventListener('click', openSettingsModal);
-            el.closeModalBtn.addEventListener('click', closeSettingsModal);
-            el.settingsModal.addEventListener('click', (e) => {
-                if (e.target === el.settingsModal) closeSettingsModal();
-            });
-            el.historyBtn.addEventListener('click', openHistoryModal);
-            el.closeHistoryBtn.addEventListener('click', closeHistoryModal);
-            el.historyModal.addEventListener('click', (e) => {
-                if (e.target === el.historyModal) closeHistoryModal();
-            });
-            el.testingModeBtn.addEventListener('click', toggleTestingMode);
-            el.showZonesBtn.addEventListener('click', toggleShowZones);
-            
-            const data = loadData();
-            
-            if (data && data.currentFast) {
-                // Restore existing fast
-                fastStartTime = data.currentFast.startTime;
-                goalHours = data.currentFast.goalHours;
-                isFasting = true;
-                notificationSent = false;
-                
-                updateDisplay();
-                timerInterval = setInterval(updateDisplay, 1000);
-                
-                updateStatusBadge(true, goalHours);
-                el.actionButton.textContent = 'End Fast';
-                el.actionButton.className = CLASSES.buttonEnd;
-            } else {
-                showIdleState();
-            }
-            
-            // Always bind the action button click handler
-            el.actionButton.addEventListener('click', handleActionClick);
-        }
-        
-        function handleActionClick() {
-            if (isFasting) {
-                endFast();
-            } else {
-                if (testingMode) {
-                    // Use 30 seconds (converted to hours) for testing
-                    startFast(Date.now(), 30 / 3600);
-                    // Turn off testing mode after starting
-                    testingMode = false;
-                    updateTestingModeUI();
-                } else {
-                    startFast(Date.now(), goalHours);
-                }
-            }
-        }
-
-        function toggleTestingMode() {
-            testingMode = !testingMode;
-            updateTestingModeUI();
-        }
-
-        function updateTestingModeUI() {
+    function handleActionClick() {
+        if (isFasting) {
+            endFast();
+        } else {
             if (testingMode) {
-                el.testingModeBtn.classList.remove('bg-slate-200', 'dark:bg-slate-600');
-                el.testingModeBtn.classList.add('bg-emerald-500');
-                el.testingModeToggle.classList.add('translate-x-5');
+                // Use 30 seconds (converted to hours) for testing
+                startFast(Date.now(), 30 / 3600);
+                // Turn off testing mode after starting
+                testingMode = false;
+                updateTestingModeUI();
             } else {
-                el.testingModeBtn.classList.add('bg-slate-200', 'dark:bg-slate-600');
-                el.testingModeBtn.classList.remove('bg-emerald-500');
-                el.testingModeToggle.classList.remove('translate-x-5');
+                startFast(Date.now(), goalHours);
             }
         }
+    }
 
-        function initShowZones() {
-            const data = loadData();
-            showZones = data?.settings?.showZones !== false; // Default to true
-            updateShowZonesUI();
-            updateZoneVisibility();
+    function toggleTestingMode() {
+        testingMode = !testingMode;
+        updateTestingModeUI();
+    }
+
+    function updateTestingModeUI() {
+        if (testingMode) {
+            el.testingModeBtn.classList.remove('bg-slate-200', 'dark:bg-slate-600');
+            el.testingModeBtn.classList.add('bg-emerald-500');
+            el.testingModeToggle.classList.add('translate-x-5');
+        } else {
+            el.testingModeBtn.classList.add('bg-slate-200', 'dark:bg-slate-600');
+            el.testingModeBtn.classList.remove('bg-emerald-500');
+            el.testingModeToggle.classList.remove('translate-x-5');
         }
+    }
 
-        function toggleShowZones() {
-            showZones = !showZones;
-            
-            // Save to settings
-            const data = loadData() || { history: [] };
-            data.settings = data.settings || {};
-            data.settings.showZones = showZones;
-            saveData(data);
-            
-            updateShowZonesUI();
-            updateZoneVisibility();
+    function initShowZones() {
+        const data = loadData();
+        showZones = data?.settings?.showZones !== false; // Default to true
+        updateShowZonesUI();
+        updateZoneVisibility();
+    }
+
+    function toggleShowZones() {
+        showZones = !showZones;
+
+        // Save to settings
+        const data = loadData() || { history: [] };
+        data.settings = data.settings || {};
+        data.settings.showZones = showZones;
+        saveData(data);
+
+        updateShowZonesUI();
+        updateZoneVisibility();
+    }
+
+    function updateShowZonesUI() {
+        if (showZones) {
+            el.showZonesBtn.classList.remove('bg-slate-200', 'dark:bg-slate-600');
+            el.showZonesBtn.classList.add('bg-emerald-500');
+            el.showZonesToggle.classList.add('translate-x-5');
+        } else {
+            el.showZonesBtn.classList.add('bg-slate-200', 'dark:bg-slate-600');
+            el.showZonesBtn.classList.remove('bg-emerald-500');
+            el.showZonesToggle.classList.remove('translate-x-5');
         }
+    }
 
-        function updateShowZonesUI() {
-            if (showZones) {
-                el.showZonesBtn.classList.remove('bg-slate-200', 'dark:bg-slate-600');
-                el.showZonesBtn.classList.add('bg-emerald-500');
-                el.showZonesToggle.classList.add('translate-x-5');
-            } else {
-                el.showZonesBtn.classList.add('bg-slate-200', 'dark:bg-slate-600');
-                el.showZonesBtn.classList.remove('bg-emerald-500');
-                el.showZonesToggle.classList.remove('translate-x-5');
-            }
+    function updateZoneVisibility() {
+        if (showZones) {
+            el.zoneContainer.classList.remove('hidden');
+            el.zoneDisclaimer.classList.remove('hidden');
+            // Update ring to current zone color
+            const zone = FASTING_ZONES[currentZoneIndex >= 0 ? currentZoneIndex : 0];
+            el.progressCircle.style.stroke = zone.color;
+        } else {
+            el.zoneContainer.classList.add('hidden');
+            el.zoneDisclaimer.classList.add('hidden');
+            // Reset ring to default color
+            el.progressCircle.style.stroke = '#10b981';
         }
+    }
 
-        function updateZoneVisibility() {
-            if (showZones) {
-                el.zoneContainer.classList.remove('hidden');
-                el.zoneDisclaimer.classList.remove('hidden');
-                // Update ring to current zone color
-                const zone = FASTING_ZONES[currentZoneIndex >= 0 ? currentZoneIndex : 0];
-                el.progressCircle.style.stroke = zone.color;
-            } else {
-                el.zoneContainer.classList.add('hidden');
-                el.zoneDisclaimer.classList.add('hidden');
-                // Reset ring to default color
-                el.progressCircle.style.stroke = '#10b981';
-            }
-        }
-
-        // PWA Service Worker Registration
-        function registerServiceWorker() {
-            if ('serviceWorker' in navigator) {
-                // Create service worker inline
-                const swCode = `
+    // PWA Service Worker Registration
+    function registerServiceWorker() {
+        if ('serviceWorker' in navigator) {
+            // Create service worker inline
+            const swCode = `
                     self.addEventListener('install', (e) => {
                         self.skipWaiting();
                     });
@@ -562,29 +562,30 @@
                         );
                     });
                 `;
-                
-                const blob = new Blob([swCode], { type: 'application/javascript' });
-                const swUrl = URL.createObjectURL(blob);
-                
-                navigator.serviceWorker.register(swUrl).catch(() => {
-                    // Silent fail - PWA features just won't work
-                });
-            }
-        }
 
-        // Notification Functions
-        function requestNotificationPermission() {
-            if ('Notification' in window && Notification.permission === 'default') {
-                Notification.requestPermission().then(permission => {
-                    notificationPermission = permission === 'granted';
-                });
-            } else if ('Notification' in window && Notification.permission === 'granted') {
-                notificationPermission = true;
-            }
-        }
+            const blob = new Blob([swCode], { type: 'application/javascript' });
+            const swUrl = URL.createObjectURL(blob);
 
-        function sendNotification(title, body) {
-            if (notificationPermission && 'Notification' in window) {
+            navigator.serviceWorker.register(swUrl).catch(() => {
+                // Silent fail - PWA features just won't work
+            });
+        }
+    }
+
+    // Notification Functions
+    function requestNotificationPermission() {
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission().then(permission => {
+                notificationPermission = permission === 'granted';
+            });
+        } else if ('Notification' in window && Notification.permission === 'granted') {
+            notificationPermission = true;
+        }
+    }
+
+    function sendNotification(title, body) {
+        if (notificationPermission && 'Notification' in window) {
+            try {
                 new Notification(title, {
                     body: body,
                     icon: 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3E%3Ccircle cx=\'50\' cy=\'50\' r=\'45\' fill=\'%2310b981\'/%3E%3C/svg%3E',
@@ -592,34 +593,37 @@
                     tag: 'fasting-complete',
                     requireInteraction: false
                 });
+            } catch (e) {
+                // Notification failed - ignore silently (common on mobile/PWA)
             }
         }
+    }
 
-        function openSettingsModal() {
-            const defaultDuration = getDefaultDuration();
-            updateDurationButtons(defaultDuration);
-            el.settingsModal.classList.remove('hidden');
-        }
+    function openSettingsModal() {
+        const defaultDuration = getDefaultDuration();
+        updateDurationButtons(defaultDuration);
+        el.settingsModal.classList.remove('hidden');
+    }
 
-        function closeSettingsModal() {
-            el.settingsModal.classList.add('hidden');
-        }
+    function closeSettingsModal() {
+        el.settingsModal.classList.add('hidden');
+    }
 
-        function openHistoryModal() {
-            loadHistory();
-            el.historyModal.classList.remove('hidden');
-        }
+    function openHistoryModal() {
+        loadHistory();
+        el.historyModal.classList.remove('hidden');
+    }
 
-        function closeHistoryModal() {
-            el.historyModal.classList.add('hidden');
-        }
+    function closeHistoryModal() {
+        el.historyModal.classList.add('hidden');
+    }
 
-        function loadHistory() {
-            const data = loadData();
-            const history = data?.history || [];
-            
-            if (history.length === 0) {
-                el.historyList.innerHTML = `
+    function loadHistory() {
+        const data = loadData();
+        const history = data?.history || [];
+
+        if (history.length === 0) {
+            el.historyList.innerHTML = `
                     <div class="text-center py-12 text-slate-500 dark:text-slate-400">
                         <svg class="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -628,23 +632,23 @@
                         <p class="text-xs mt-1">End your first fast to see it here</p>
                     </div>
                 `;
-                return;
-            }
-            
-            // Sort by most recent first
-            const sortedHistory = [...history].sort((a, b) => b.endTime - a.endTime);
-            
-            // Use DocumentFragment for better performance
-            const fragment = document.createDocumentFragment();
-            const tempDiv = document.createElement('div');
-            
-            tempDiv.innerHTML = sortedHistory.map(fast => {
-                const startDate = new Date(fast.startTime);
-                const endDate = new Date(fast.endTime);
-                const durationHours = Math.floor(fast.duration);
-                const durationMins = Math.round((fast.duration - durationHours) * 60);
-                
-                return `
+            return;
+        }
+
+        // Sort by most recent first
+        const sortedHistory = [...history].sort((a, b) => b.endTime - a.endTime);
+
+        // Use DocumentFragment for better performance
+        const fragment = document.createDocumentFragment();
+        const tempDiv = document.createElement('div');
+
+        tempDiv.innerHTML = sortedHistory.map(fast => {
+            const startDate = new Date(fast.startTime);
+            const endDate = new Date(fast.endTime);
+            const durationHours = Math.floor(fast.duration);
+            const durationMins = Math.round((fast.duration - durationHours) * 60);
+
+            return `
                     <div class="py-4 border-b border-slate-200 dark:border-slate-700 last:border-0">
                         <div class="flex items-start justify-between mb-2">
                             <div class="font-medium text-slate-800 dark:text-slate-100">
@@ -667,144 +671,144 @@
                         </div>
                     </div>
                 `;
-            }).join('');
-            
-            el.historyList.innerHTML = '';
-            while (tempDiv.firstChild) {
-                el.historyList.appendChild(tempDiv.firstChild);
+        }).join('');
+
+        el.historyList.innerHTML = '';
+        while (tempDiv.firstChild) {
+            el.historyList.appendChild(tempDiv.firstChild);
+        }
+    }
+
+    function deleteFast(fastId) {
+        const data = loadData();
+        if (!data || !data.history) return;
+
+        data.history = data.history.filter(fast => fast.id !== fastId);
+        saveData(data);
+        loadHistory();
+    }
+
+    // Make deleteFast available globally for onclick
+    window.deleteFast = deleteFast;
+
+    function startFast(startTime, hours) {
+        fastStartTime = startTime;
+        goalHours = hours;
+        isFasting = true;
+        notificationSent = false;
+
+        saveCurrentFast();
+        updateDisplay();
+        timerInterval = setInterval(updateDisplay, 1000);
+
+        updateStatusBadge(true, goalHours);
+        el.actionButton.textContent = 'End Fast';
+        el.actionButton.className = CLASSES.buttonEnd;
+    }
+
+    function endFast() {
+        clearInterval(timerInterval);
+        timerInterval = null;
+
+        const endTime = Date.now();
+        saveFastToHistory(fastStartTime, endTime, goalHours);
+        clearCurrentFast();
+
+        isFasting = false;
+        showIdleState();
+    }
+
+    function showIdleState() {
+        const defaultDuration = getDefaultDuration();
+        goalHours = defaultDuration;
+
+        updateStatusBadge(false, defaultDuration);
+        el.timerDisplay.textContent = '00:00:00';
+        el.progressCircle.style.strokeDashoffset = CIRCUMFERENCE;
+        el.progressCircle.style.stroke = '#10b981'; // Reset to default emerald
+
+        el.actionButton.textContent = 'Start Fast';
+        el.actionButton.className = CLASSES.buttonStart;
+
+        // Reset zone display
+        currentZoneIndex = -1; // Force update
+        updateZoneDisplay(0);
+    }
+
+    function getCurrentZone(elapsedHours) {
+        for (let i = FASTING_ZONES.length - 1; i >= 0; i--) {
+            if (elapsedHours >= FASTING_ZONES[i].start) {
+                return i;
             }
         }
+        return 0;
+    }
 
-        function deleteFast(fastId) {
-            const data = loadData();
-            if (!data || !data.history) return;
-            
-            data.history = data.history.filter(fast => fast.id !== fastId);
-            saveData(data);
-            loadHistory();
-        }
+    function updateZoneDisplay(elapsedHours) {
+        const zoneIndex = getCurrentZone(elapsedHours);
 
-        // Make deleteFast available globally for onclick
-        window.deleteFast = deleteFast;
+        // Only update DOM if zone changed
+        if (zoneIndex !== currentZoneIndex || elapsedHours === 0) {
+            currentZoneIndex = zoneIndex;
+            const zone = FASTING_ZONES[zoneIndex];
 
-        function startFast(startTime, hours) {
-            fastStartTime = startTime;
-            goalHours = hours;
-            isFasting = true;
-            notificationSent = false;
-            
-            saveCurrentFast();
-            updateDisplay();
-            timerInterval = setInterval(updateDisplay, 1000);
-            
-            updateStatusBadge(true, goalHours);
-            el.actionButton.textContent = 'End Fast';
-            el.actionButton.className = CLASSES.buttonEnd;
-        }
+            // Update zone badge
+            el.zoneBadge.style.backgroundColor = zone.color + '30';
+            el.zoneBadge.style.color = zone.color;
+            el.zoneIcon.textContent = zone.icon;
+            el.zoneName.textContent = zone.name;
+            el.zoneDescription.textContent = zone.description;
 
-        function endFast() {
-            clearInterval(timerInterval);
-            timerInterval = null;
-            
-            const endTime = Date.now();
-            saveFastToHistory(fastStartTime, endTime, goalHours);
-            clearCurrentFast();
-            
-            isFasting = false;
-            showIdleState();
-        }
-
-        function showIdleState() {
-            const defaultDuration = getDefaultDuration();
-            goalHours = defaultDuration;
-            
-            updateStatusBadge(false, defaultDuration);
-            el.timerDisplay.textContent = '00:00:00';
-            el.progressCircle.style.strokeDashoffset = CIRCUMFERENCE;
-            el.progressCircle.style.stroke = '#10b981'; // Reset to default emerald
-            
-            el.actionButton.textContent = 'Start Fast';
-            el.actionButton.className = CLASSES.buttonStart;
-            
-            // Reset zone display
-            currentZoneIndex = -1; // Force update
-            updateZoneDisplay(0);
-        }
-
-        function getCurrentZone(elapsedHours) {
-            for (let i = FASTING_ZONES.length - 1; i >= 0; i--) {
-                if (elapsedHours >= FASTING_ZONES[i].start) {
-                    return i;
-                }
-            }
-            return 0;
-        }
-
-        function updateZoneDisplay(elapsedHours) {
-            const zoneIndex = getCurrentZone(elapsedHours);
-            
-            // Only update DOM if zone changed
-            if (zoneIndex !== currentZoneIndex || elapsedHours === 0) {
-                currentZoneIndex = zoneIndex;
-                const zone = FASTING_ZONES[zoneIndex];
-                
-                // Update zone badge
-                el.zoneBadge.style.backgroundColor = zone.color + '30';
-                el.zoneBadge.style.color = zone.color;
-                el.zoneIcon.textContent = zone.icon;
-                el.zoneName.textContent = zone.name;
-                el.zoneDescription.textContent = zone.description;
-                
-                // Update progress ring color (only if zones are shown)
-                if (showZones) {
-                    el.progressCircle.style.stroke = zone.color;
-                } else {
-                    el.progressCircle.style.stroke = '#10b981'; // Default emerald
-                }
+            // Update progress ring color (only if zones are shown)
+            if (showZones) {
+                el.progressCircle.style.stroke = zone.color;
+            } else {
+                el.progressCircle.style.stroke = '#10b981'; // Default emerald
             }
         }
+    }
 
-        function updateDisplay() {
-            if (!isFasting) return;
-            
-            const now = Date.now();
-            const elapsed = now - fastStartTime;
-            const goalMs = goalHours * MS_PER_HOUR;
-            
-            // Update timer - use bitwise operations for faster floor
-            const totalSeconds = (elapsed / 1000) | 0;
-            const hours = (totalSeconds / 3600) | 0;
-            const minutes = ((totalSeconds % 3600) / 60) | 0;
-            const seconds = totalSeconds % 60;
-            
-            // Only update DOM if value changed
-            const newTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-            if (el.timerDisplay.textContent !== newTime) {
-                el.timerDisplay.textContent = newTime;
-            }
-            
-            // Update progress (only on second boundaries to reduce repaints)
-            const progress = Math.min((elapsed / goalMs) * 100, 100);
-            const offset = CIRCUMFERENCE - (progress / 100) * CIRCUMFERENCE;
-            el.progressCircle.style.strokeDashoffset = offset;
-            
-            // Update fasting zone
-            const elapsedHours = elapsed / MS_PER_HOUR;
-            updateZoneDisplay(elapsedHours);
-            
-            // Check if goal reached and send notification
-            if (elapsed >= goalMs && !notificationSent) {
-                notificationSent = true;
-                sendNotification('Fasting Goal Reached! 🎉', `You've completed your ${goalHours} hour fast!`);
-                
-                // Update button to show completion
-                el.actionButton.textContent = 'Complete Fast';
-                el.actionButton.className = CLASSES.buttonComplete;
-            }
+    function updateDisplay() {
+        if (!isFasting) return;
+
+        const now = Date.now();
+        const elapsed = now - fastStartTime;
+        const goalMs = goalHours * MS_PER_HOUR;
+
+        // Update timer - use bitwise operations for faster floor
+        const totalSeconds = (elapsed / 1000) | 0;
+        const hours = (totalSeconds / 3600) | 0;
+        const minutes = ((totalSeconds % 3600) / 60) | 0;
+        const seconds = totalSeconds % 60;
+
+        // Only update DOM if value changed
+        const newTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        if (el.timerDisplay.textContent !== newTime) {
+            el.timerDisplay.textContent = newTime;
         }
 
-        // Start on load
-        document.addEventListener('DOMContentLoaded', init);
-    </script>
+        // Update progress (only on second boundaries to reduce repaints)
+        const progress = Math.min((elapsed / goalMs) * 100, 100);
+        const offset = CIRCUMFERENCE - (progress / 100) * CIRCUMFERENCE;
+        el.progressCircle.style.strokeDashoffset = offset;
+
+        // Update fasting zone
+        const elapsedHours = elapsed / MS_PER_HOUR;
+        updateZoneDisplay(elapsedHours);
+
+        // Check if goal reached and send notification
+        if (elapsed >= goalMs && !notificationSent) {
+            notificationSent = true;
+            sendNotification('Fasting Goal Reached! 🎉', `You've completed your ${goalHours} hour fast!`);
+
+            // Update button to show completion
+            el.actionButton.textContent = 'Complete Fast';
+            el.actionButton.className = CLASSES.buttonComplete;
+        }
+    }
+
+    // Start on load
+    document.addEventListener('DOMContentLoaded', init);
+</script>
 </body>
 </html>
