@@ -89,10 +89,13 @@
                             <span id="zoneIcon">🍽️</span>
                             <span id="zoneName">Fed</span>
                         </div>
-                        <div id="zoneDescription" class="text-xs text-slate-400 mt-2 text-center">
-                            Digesting food
-                        </div>
                     </div>
+                    <button id="startTimeDisplay" class="hidden mt-3 text-xs text-slate-400 hover:text-slate-300 transition-colors flex items-center gap-1 cursor-pointer">
+                        <span id="startTimeText">Started 8:30 PM</span>
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                        </svg>
+                    </button>
                 </div>
             </div>
         </div>
@@ -177,15 +180,21 @@
             </button>
         </div>
 
-        <!-- Testing Mode Setting -->
-        <div class="flex items-center justify-between py-4">
-            <div>
-                <div class="font-medium text-slate-800 dark:text-slate-100">Testing Mode</div>
-                <div class="text-sm text-slate-500 dark:text-slate-400">Next fast will be 30 seconds</div>
+        <!-- Data Export/Import -->
+        <div class="py-4">
+            <div class="mb-3">
+                <div class="font-medium text-slate-800 dark:text-slate-100">Data</div>
+                <div class="text-sm text-slate-500 dark:text-slate-400">Export or import your fasting history</div>
             </div>
-            <button id="testingModeBtn" class="relative w-12 h-7 rounded-full transition-colors bg-slate-200 dark:bg-slate-600">
-                <span id="testingModeToggle" class="absolute left-1 top-1 w-5 h-5 bg-white rounded-full shadow transition-transform"></span>
-            </button>
+            <div class="flex gap-2">
+                <button id="exportDataBtn" class="flex-1 py-2 px-4 rounded-lg border-2 border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:border-emerald-500 dark:hover:border-emerald-500 transition-colors text-sm font-medium">
+                    Export
+                </button>
+                <label class="flex-1 py-2 px-4 rounded-lg border-2 border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:border-emerald-500 dark:hover:border-emerald-500 transition-colors text-sm font-medium text-center cursor-pointer">
+                    Import
+                    <input type="file" id="importFileInput" accept=".json" class="hidden">
+                </label>
+            </div>
         </div>
     </div>
 </div>
@@ -209,15 +218,63 @@
     </div>
 </div>
 
+<!-- Edit Start Time Modal -->
+<div id="editStartTimeModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-8 z-50">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6 m-6 transition-colors duration-300">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-100">Edit Start Time</h2>
+            <button id="closeEditStartTimeBtn" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="space-y-4">
+            <div>
+                <label for="editStartDate" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Date</label>
+                <input type="date" id="editStartDate" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:border-emerald-500 dark:focus:border-emerald-500 focus:outline-none transition-colors">
+            </div>
+            <div>
+                <label for="editStartTime" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Time</label>
+                <input type="time" id="editStartTime" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:border-emerald-500 dark:focus:border-emerald-500 focus:outline-none transition-colors">
+            </div>
+            <div id="editStartTimeError" class="hidden text-red-500 dark:text-red-400 text-sm"></div>
+            <button id="saveStartTimeBtn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 rounded-xl transition-colors duration-200 mt-4">
+                Save Changes
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Import Confirm Modal -->
+<div id="importConfirmModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-8 z-50">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6 m-6 transition-colors duration-300">
+        <h2 class="text-xl font-bold text-slate-800 dark:text-slate-100 mb-4">Import Data</h2>
+        <p id="importConfirmMessage" class="text-slate-600 dark:text-slate-400 mb-6">Found 0 fasts in file.</p>
+        <div class="flex flex-col gap-3">
+            <button id="importMergeBtn" class="w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-colors">
+                Merge (keep existing data)
+            </button>
+            <button id="importReplaceBtn" class="w-full py-3 px-4 rounded-xl border-2 border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:border-red-500 dark:hover:border-red-500 hover:text-red-600 dark:hover:text-red-400 transition-colors font-medium">
+                Replace all data
+            </button>
+            <button id="importCancelBtn" class="w-full py-3 px-4 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors font-medium">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
     // State
     let fastStartTime = null;
     let goalHours = 16;
-    let timerInterval = null;
+    let animationFrameId = null;
+    let lastUpdateTime = 0;
     let isFasting = false;
     let notificationSent = false;
     let notificationPermission = false;
-    let testingMode = false;
     let currentZoneIndex = 0;
     let showZones = true;
 
@@ -241,16 +298,28 @@
         el.closeHistoryBtn = document.getElementById('closeHistoryBtn');
         el.historyList = document.getElementById('historyList');
         el.durationButtons = document.getElementById('durationButtons');
-        el.testingModeBtn = document.getElementById('testingModeBtn');
-        el.testingModeToggle = document.getElementById('testingModeToggle');
         el.zoneContainer = document.getElementById('zoneContainer');
         el.zoneBadge = document.getElementById('zoneBadge');
         el.zoneIcon = document.getElementById('zoneIcon');
         el.zoneName = document.getElementById('zoneName');
-        el.zoneDescription = document.getElementById('zoneDescription');
         el.zoneDisclaimer = document.getElementById('zoneDisclaimer');
         el.showZonesBtn = document.getElementById('showZonesBtn');
         el.showZonesToggle = document.getElementById('showZonesToggle');
+        el.exportDataBtn = document.getElementById('exportDataBtn');
+        el.importFileInput = document.getElementById('importFileInput');
+        el.importConfirmModal = document.getElementById('importConfirmModal');
+        el.importConfirmMessage = document.getElementById('importConfirmMessage');
+        el.importCancelBtn = document.getElementById('importCancelBtn');
+        el.importMergeBtn = document.getElementById('importMergeBtn');
+        el.importReplaceBtn = document.getElementById('importReplaceBtn');
+        el.startTimeDisplay = document.getElementById('startTimeDisplay');
+        el.startTimeText = document.getElementById('startTimeText');
+        el.editStartTimeModal = document.getElementById('editStartTimeModal');
+        el.closeEditStartTimeBtn = document.getElementById('closeEditStartTimeBtn');
+        el.editStartDate = document.getElementById('editStartDate');
+        el.editStartTime = document.getElementById('editStartTime');
+        el.editStartTimeError = document.getElementById('editStartTimeError');
+        el.saveStartTimeBtn = document.getElementById('saveStartTimeBtn');
 
         // Generate duration buttons
         createDurationButtons();
@@ -274,12 +343,12 @@
     // Fasting zones configuration (AA compliant colors)
     // Note: Timings are approximate and vary by individual
     const FASTING_ZONES = [
-        { name: 'Fed', start: 0, end: 3, color: '#94a3b8', icon: '🍽️', description: 'Digesting food' },
-        { name: 'Post-absorptive', start: 3, end: 8, color: '#a78bfa', icon: '⏳', description: 'Using glucose stores' },
-        { name: 'Glycogen depletion', start: 8, end: 14, color: '#60a5fa', icon: '💪', description: 'Tapping into reserves' },
-        { name: 'Fat burning', start: 14, end: 20, color: '#fbbf24', icon: '🔥', description: 'Increased fat oxidation' },
-        { name: 'Ketosis', start: 20, end: 36, color: '#34d399', icon: '⚡', description: 'Significant ketone production' },
-        { name: 'Deep ketosis', start: 36, end: 72, color: '#f472b6', icon: '✨', description: 'Autophagy may increase' },
+        { name: 'Fed', start: 0, color: '#94a3b8', icon: '🍽️' },
+        { name: 'Post-Absorptive', start: 3, color: '#a78bfa', icon: '⏳' },
+        { name: 'Glycogen Depletion', start: 8, color: '#60a5fa', icon: '💪' },
+        { name: 'Fat Burning', start: 14, color: '#fbbf24', icon: '🔥' },
+        { name: 'Ketosis', start: 20, color: '#34d399', icon: '⚡' },
+        { name: 'Deep Ketosis', start: 36, color: '#f472b6', icon: '✨' },
     ];
 
     // CSS class constants
@@ -346,6 +415,35 @@
         const text = isFasting ? 'Fasting' : 'Not Fasting';
         el.statusBadge.innerHTML = `<span id="statusText">${text}</span> · <span id="goalDisplay">${hours}h</span>`;
         el.statusBadge.className = isFasting ? CLASSES.statusFasting : CLASSES.statusIdle;
+        
+        // Show/hide start time display
+        if (isFasting) {
+            el.startTimeDisplay.classList.remove('hidden');
+            updateStartTimeDisplay();
+        } else {
+            el.startTimeDisplay.classList.add('hidden');
+        }
+    }
+    
+    function updateStartTimeDisplay() {
+        if (!fastStartTime) return;
+        const startDate = new Date(fastStartTime);
+        const timeStr = startDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+        
+        // Check if it's today, yesterday, or another day
+        const now = new Date();
+        const startDay = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const diffDays = Math.floor((today - startDay) / (24 * 60 * 60 * 1000));
+        
+        let datePrefix = '';
+        if (diffDays === 1) {
+            datePrefix = 'Yesterday ';
+        } else if (diffDays > 1) {
+            datePrefix = startDate.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' ';
+        }
+        
+        el.startTimeText.textContent = `Started ${datePrefix}${timeStr}`;
     }
 
     function updateDurationButtons(selectedHours) {
@@ -377,6 +475,167 @@
         } catch (e) {
             console.error('Error saving data:', e);
         }
+    }
+
+    function exportData() {
+        const data = loadData();
+        if (!data) {
+            alert('No data to export.');
+            return;
+        }
+
+        const json = JSON.stringify(data, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `fasting-data-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    let pendingImportData = null;
+    let pendingNewFastsCount = 0;
+
+    function importData(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const importedData = JSON.parse(e.target.result);
+
+                // Validate structure
+                if (typeof importedData !== 'object' || importedData === null) {
+                    throw new Error('Invalid data format');
+                }
+
+                // Ensure history is an array if present
+                if (importedData.history && !Array.isArray(importedData.history)) {
+                    throw new Error('Invalid history format');
+                }
+
+                // Calculate how many fasts would be new (for merge)
+                const existingData = loadData() || { history: [] };
+                const existingStartTimes = new Set((existingData.history || []).map(f => f.startTime));
+                const importedHistory = importedData.history || [];
+                pendingNewFastsCount = importedHistory.filter(f => !existingStartTimes.has(f.startTime)).length;
+
+                // Store data and show confirm modal
+                pendingImportData = importedData;
+                const totalCount = importedHistory.length;
+                
+                let message = `Found ${totalCount} fast${totalCount !== 1 ? 's' : ''} in file.`;
+                if (pendingNewFastsCount === 0) {
+                    message += ` All fasts already exist in your data.`;
+                } else if (pendingNewFastsCount === totalCount) {
+                    message += ` All ${pendingNewFastsCount} would be added.`;
+                } else {
+                    message += ` ${pendingNewFastsCount} new fast${pendingNewFastsCount !== 1 ? 's' : ''} would be added.`;
+                }
+                
+                el.importConfirmMessage.textContent = message;
+                el.importConfirmModal.classList.remove('hidden');
+
+            } catch (err) {
+                showImportError('Failed to import: Invalid file format.');
+                console.error('Import error:', err);
+            }
+        };
+        
+        reader.onerror = function() {
+            showImportError('Failed to read file.');
+        };
+        
+        reader.readAsText(file);
+
+        // Reset input so same file can be selected again
+        event.target.value = '';
+    }
+
+    function confirmImport(mode) {
+        if (!pendingImportData) return;
+
+        // Stop any existing timer
+        if (animationFrameId) {
+            cancelAnimationFrame(animationFrameId);
+            animationFrameId = null;
+        }
+
+        let finalData;
+        
+        if (mode === 'merge') {
+            const existingData = loadData() || { history: [], settings: {} };
+            const existingHistory = existingData.history || [];
+            const importedHistory = pendingImportData.history || [];
+            
+            // Create a Set of existing start times for fast lookup
+            const existingStartTimes = new Set(existingHistory.map(f => f.startTime));
+            
+            // Add only fasts that don't already exist
+            const newFasts = importedHistory.filter(f => !existingStartTimes.has(f.startTime));
+            
+            finalData = {
+                ...existingData,
+                history: [...existingHistory, ...newFasts].sort((a, b) => a.startTime - b.startTime)
+            };
+            
+            // Keep existing currentFast if present, otherwise use imported
+            if (!existingData.currentFast && pendingImportData.currentFast) {
+                finalData.currentFast = pendingImportData.currentFast;
+            }
+        } else {
+            // Replace mode - use imported data as-is
+            finalData = pendingImportData;
+        }
+
+        saveData(finalData);
+
+        // Refresh UI
+        initTheme();
+        initShowZones();
+        
+        if (finalData.currentFast) {
+            fastStartTime = finalData.currentFast.startTime;
+            goalHours = finalData.currentFast.goalHours;
+            isFasting = true;
+            notificationSent = false;
+            updateDisplay();
+            startTimerLoop();
+            updateStatusBadge(true, goalHours);
+            el.actionButton.textContent = 'End Fast';
+            el.actionButton.className = CLASSES.buttonEnd;
+        } else {
+            isFasting = false;
+            showIdleState();
+        }
+
+        pendingImportData = null;
+        el.importConfirmModal.classList.add('hidden');
+        closeSettingsModal();
+    }
+
+    function cancelImport() {
+        pendingImportData = null;
+        el.importConfirmModal.classList.add('hidden');
+    }
+
+    function showImportError(message) {
+        el.importConfirmMessage.textContent = message;
+        el.importMergeBtn.classList.add('hidden');
+        el.importReplaceBtn.classList.add('hidden');
+        el.importCancelBtn.textContent = 'OK';
+        el.importConfirmModal.classList.remove('hidden');
+    }
+
+    function resetImportModal() {
+        el.importMergeBtn.classList.remove('hidden');
+        el.importReplaceBtn.classList.remove('hidden');
+        el.importCancelBtn.textContent = 'Cancel';
     }
 
     function clearCurrentFast() {
@@ -434,8 +693,21 @@
         el.historyModal.addEventListener('click', (e) => {
             if (e.target === el.historyModal) closeHistoryModal();
         });
-        el.testingModeBtn.addEventListener('click', toggleTestingMode);
         el.showZonesBtn.addEventListener('click', toggleShowZones);
+        el.exportDataBtn.addEventListener('click', exportData);
+        el.importFileInput.addEventListener('change', importData);
+        el.importMergeBtn.addEventListener('click', () => confirmImport('merge'));
+        el.importReplaceBtn.addEventListener('click', () => confirmImport('replace'));
+        el.importCancelBtn.addEventListener('click', () => {
+            cancelImport();
+            resetImportModal();
+        });
+        el.startTimeDisplay.addEventListener('click', openEditStartTimeModal);
+        el.closeEditStartTimeBtn.addEventListener('click', closeEditStartTimeModal);
+        el.editStartTimeModal.addEventListener('click', (e) => {
+            if (e.target === el.editStartTimeModal) closeEditStartTimeModal();
+        });
+        el.saveStartTimeBtn.addEventListener('click', saveEditedStartTime);
 
         const data = loadData();
 
@@ -447,7 +719,7 @@
             notificationSent = false;
 
             updateDisplay();
-            timerInterval = setInterval(updateDisplay, 1000);
+            startTimerLoop();
 
             updateStatusBadge(true, goalHours);
             el.actionButton.textContent = 'End Fast';
@@ -464,32 +736,7 @@
         if (isFasting) {
             endFast();
         } else {
-            if (testingMode) {
-                // Use 30 seconds (converted to hours) for testing
-                startFast(Date.now(), 30 / 3600);
-                // Turn off testing mode after starting
-                testingMode = false;
-                updateTestingModeUI();
-            } else {
-                startFast(Date.now(), goalHours);
-            }
-        }
-    }
-
-    function toggleTestingMode() {
-        testingMode = !testingMode;
-        updateTestingModeUI();
-    }
-
-    function updateTestingModeUI() {
-        if (testingMode) {
-            el.testingModeBtn.classList.remove('bg-slate-200', 'dark:bg-slate-600');
-            el.testingModeBtn.classList.add('bg-emerald-500');
-            el.testingModeToggle.classList.add('translate-x-5');
-        } else {
-            el.testingModeBtn.classList.add('bg-slate-200', 'dark:bg-slate-600');
-            el.testingModeBtn.classList.remove('bg-emerald-500');
-            el.testingModeToggle.classList.remove('translate-x-5');
+            startFast(Date.now(), goalHours);
         }
     }
 
@@ -618,6 +865,85 @@
         el.historyModal.classList.add('hidden');
     }
 
+    function openEditStartTimeModal() {
+        if (!isFasting || !fastStartTime) return;
+        
+        // Populate the form with current start time
+        const startDate = new Date(fastStartTime);
+        
+        // Format date as YYYY-MM-DD for input
+        const year = startDate.getFullYear();
+        const month = String(startDate.getMonth() + 1).padStart(2, '0');
+        const day = String(startDate.getDate()).padStart(2, '0');
+        el.editStartDate.value = `${year}-${month}-${day}`;
+        
+        // Format time as HH:MM for input
+        const hours = String(startDate.getHours()).padStart(2, '0');
+        const minutes = String(startDate.getMinutes()).padStart(2, '0');
+        el.editStartTime.value = `${hours}:${minutes}`;
+        
+        // Hide any previous error
+        el.editStartTimeError.classList.add('hidden');
+        
+        el.editStartTimeModal.classList.remove('hidden');
+    }
+
+    function closeEditStartTimeModal() {
+        el.editStartTimeModal.classList.add('hidden');
+    }
+
+    function saveEditedStartTime() {
+        const dateValue = el.editStartDate.value;
+        const timeValue = el.editStartTime.value;
+        
+        if (!dateValue || !timeValue) {
+            el.editStartTimeError.textContent = 'Please enter both date and time.';
+            el.editStartTimeError.classList.remove('hidden');
+            return;
+        }
+        
+        // Parse the new start time
+        const newStartTime = new Date(`${dateValue}T${timeValue}`).getTime();
+        const now = Date.now();
+        
+        // Validate: start time cannot be in the future
+        if (newStartTime > now) {
+            el.editStartTimeError.textContent = 'Start time cannot be in the future.';
+            el.editStartTimeError.classList.remove('hidden');
+            return;
+        }
+        
+        // Validate: start time cannot be more than 7 days ago (reasonable limit)
+        const sevenDaysAgo = now - (7 * 24 * MS_PER_HOUR);
+        if (newStartTime < sevenDaysAgo) {
+            el.editStartTimeError.textContent = 'Start time cannot be more than 7 days ago.';
+            el.editStartTimeError.classList.remove('hidden');
+            return;
+        }
+        
+        // Update the fast start time
+        fastStartTime = newStartTime;
+        
+        // Reset notification if we're now before the goal
+        const elapsed = now - fastStartTime;
+        const goalMs = goalHours * MS_PER_HOUR;
+        if (elapsed < goalMs) {
+            notificationSent = false;
+            el.actionButton.textContent = 'End Fast';
+            el.actionButton.className = CLASSES.buttonEnd;
+        }
+        
+        // Save to localStorage
+        saveCurrentFast();
+        
+        // Update the display immediately
+        updateDisplay();
+        updateStartTimeDisplay();
+        
+        // Close the modal
+        closeEditStartTimeModal();
+    }
+
     function loadHistory() {
         const data = loadData();
         const history = data?.history || [];
@@ -638,8 +964,6 @@
         // Sort by most recent first
         const sortedHistory = [...history].sort((a, b) => b.endTime - a.endTime);
 
-        // Use DocumentFragment for better performance
-        const fragment = document.createDocumentFragment();
         const tempDiv = document.createElement('div');
 
         tempDiv.innerHTML = sortedHistory.map(fast => {
@@ -699,16 +1023,34 @@
 
         saveCurrentFast();
         updateDisplay();
-        timerInterval = setInterval(updateDisplay, 1000);
+        startTimerLoop();
 
         updateStatusBadge(true, goalHours);
         el.actionButton.textContent = 'End Fast';
         el.actionButton.className = CLASSES.buttonEnd;
     }
+    
+    function startTimerLoop() {
+        lastUpdateTime = 0;
+        function tick(timestamp) {
+            if (!isFasting) return;
+            
+            // Only update once per second
+            if (timestamp - lastUpdateTime >= 1000) {
+                lastUpdateTime = timestamp;
+                updateDisplay();
+            }
+            
+            animationFrameId = requestAnimationFrame(tick);
+        }
+        animationFrameId = requestAnimationFrame(tick);
+    }
 
     function endFast() {
-        clearInterval(timerInterval);
-        timerInterval = null;
+        if (animationFrameId) {
+            cancelAnimationFrame(animationFrameId);
+            animationFrameId = null;
+        }
 
         const endTime = Date.now();
         saveFastToHistory(fastStartTime, endTime, goalHours);
@@ -757,7 +1099,6 @@
             el.zoneBadge.style.color = zone.color;
             el.zoneIcon.textContent = zone.icon;
             el.zoneName.textContent = zone.name;
-            el.zoneDescription.textContent = zone.description;
 
             // Update progress ring color (only if zones are shown)
             if (showZones) {
