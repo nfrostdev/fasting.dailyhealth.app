@@ -309,4 +309,159 @@ test.describe('Fasting Timer App', () => {
       await expect(page.locator('#zoneName')).toHaveText('Fed');
     });
   });
+
+  test.describe('Toast Notification', () => {
+    
+    test('should show toast when fast goal is reached', async ({ page }) => {
+      // Start a fast
+      await page.locator('#actionButton').click();
+      
+      // Edit start time to be past the goal (e.g., 17 hours ago for a 16h fast)
+      await page.locator('#startTimeDisplay').click();
+      
+      const pastDate = new Date();
+      pastDate.setHours(pastDate.getHours() - 17);
+      
+      const dateStr = pastDate.toISOString().split('T')[0];
+      const timeStr = pastDate.toTimeString().slice(0, 5);
+      
+      await page.locator('#editStartDate').fill(dateStr);
+      await page.locator('#editStartTime').fill(timeStr);
+      await page.locator('#saveStartTimeBtn').click();
+      
+      // Toast should appear
+      await expect(page.locator('#toast')).toHaveClass(/opacity-100/);
+      await expect(page.locator('#toast')).toContainText('Fast Complete!');
+      await expect(page.locator('#toastMessage')).toContainText('16h fast');
+    });
+
+    test('should close toast when X button is clicked', async ({ page }) => {
+      // Start a fast and trigger goal completion
+      await page.locator('#actionButton').click();
+      await page.locator('#startTimeDisplay').click();
+      
+      const pastDate = new Date();
+      pastDate.setHours(pastDate.getHours() - 17);
+      
+      const dateStr = pastDate.toISOString().split('T')[0];
+      const timeStr = pastDate.toTimeString().slice(0, 5);
+      
+      await page.locator('#editStartDate').fill(dateStr);
+      await page.locator('#editStartTime').fill(timeStr);
+      await page.locator('#saveStartTimeBtn').click();
+      
+      // Verify toast is visible
+      await expect(page.locator('#toast')).toHaveClass(/opacity-100/);
+      
+      // Close the toast
+      await page.locator('#toastClose').click();
+      
+      // Toast should be hidden
+      await expect(page.locator('#toast')).toHaveClass(/opacity-0/);
+    });
+
+    test('should show toast when returning to app after goal reached', async ({ page }) => {
+      // Start a fast with start time in the past (already completed)
+      await page.locator('#actionButton').click();
+      await page.locator('#startTimeDisplay').click();
+      
+      const pastDate = new Date();
+      pastDate.setHours(pastDate.getHours() - 17);
+      
+      const dateStr = pastDate.toISOString().split('T')[0];
+      const timeStr = pastDate.toTimeString().slice(0, 5);
+      
+      await page.locator('#editStartDate').fill(dateStr);
+      await page.locator('#editStartTime').fill(timeStr);
+      await page.locator('#saveStartTimeBtn').click();
+      
+      // Close the toast
+      await page.locator('#toastClose').click();
+      await expect(page.locator('#toast')).toHaveClass(/opacity-0/);
+      
+      // Reload the page (simulates returning to the app)
+      await page.reload();
+      await page.waitForSelector('#actionButton');
+      
+      // Toast should NOT appear again (already notified)
+      await expect(page.locator('#toast')).toHaveClass(/opacity-0/);
+    });
+
+    test('should not show toast before goal is reached', async ({ page }) => {
+      // Start a fast (just started, goal not reached)
+      await page.locator('#actionButton').click();
+      
+      // Wait a moment to ensure no toast appears
+      await page.waitForTimeout(500);
+      
+      // Toast should remain hidden
+      await expect(page.locator('#toast')).toHaveClass(/opacity-0/);
+    });
+
+    test('should change button to Complete Fast when goal reached', async ({ page }) => {
+      // Start a fast
+      await page.locator('#actionButton').click();
+      await expect(page.locator('#actionButton')).toHaveText('End Fast');
+      
+      // Edit start time to trigger goal completion
+      await page.locator('#startTimeDisplay').click();
+      
+      const pastDate = new Date();
+      pastDate.setHours(pastDate.getHours() - 17);
+      
+      const dateStr = pastDate.toISOString().split('T')[0];
+      const timeStr = pastDate.toTimeString().slice(0, 5);
+      
+      await page.locator('#editStartDate').fill(dateStr);
+      await page.locator('#editStartTime').fill(timeStr);
+      await page.locator('#saveStartTimeBtn').click();
+      
+      // Button should now say "Complete Fast"
+      await expect(page.locator('#actionButton')).toHaveText('Complete Fast');
+    });
+
+    test('should have progress bar in toast', async ({ page }) => {
+      // Trigger toast
+      await page.locator('#actionButton').click();
+      await page.locator('#startTimeDisplay').click();
+      
+      const pastDate = new Date();
+      pastDate.setHours(pastDate.getHours() - 17);
+      
+      const dateStr = pastDate.toISOString().split('T')[0];
+      const timeStr = pastDate.toTimeString().slice(0, 5);
+      
+      await page.locator('#editStartDate').fill(dateStr);
+      await page.locator('#editStartTime').fill(timeStr);
+      await page.locator('#saveStartTimeBtn').click();
+      
+      // Progress bar should be visible
+      await expect(page.locator('#toastProgress')).toBeVisible();
+    });
+
+    test('should auto-dismiss toast after timeout', async ({ page }) => {
+      // Trigger toast
+      await page.locator('#actionButton').click();
+      await page.locator('#startTimeDisplay').click();
+      
+      const pastDate = new Date();
+      pastDate.setHours(pastDate.getHours() - 17);
+      
+      const dateStr = pastDate.toISOString().split('T')[0];
+      const timeStr = pastDate.toTimeString().slice(0, 5);
+      
+      await page.locator('#editStartDate').fill(dateStr);
+      await page.locator('#editStartTime').fill(timeStr);
+      await page.locator('#saveStartTimeBtn').click();
+      
+      // Toast should be visible
+      await expect(page.locator('#toast')).toHaveClass(/opacity-100/);
+      
+      // Wait for auto-dismiss (15 seconds + buffer)
+      await page.waitForTimeout(16000);
+      
+      // Toast should be hidden
+      await expect(page.locator('#toast')).toHaveClass(/opacity-0/);
+    });
+  });
 });
