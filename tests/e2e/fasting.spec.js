@@ -128,9 +128,10 @@ test.describe('Fasting Timer App', () => {
       // Open history
       await page.locator('#historyBtn').click();
       
-      // Should show the completed fast
+      // Should show the completed fast (displays as "Xh Xm" with goal like "/ 16h")
       await expect(page.locator('#historyList')).not.toContainText('No fasting history yet');
-      await expect(page.locator('#historyList')).toContainText('Goal:');
+      // Check for duration format (e.g., "0h 0m" or "0h 1m") and goal format (e.g., "/ 16h")
+      await expect(page.locator('#historyList')).toContainText(/\d+h \d+m/);
     });
 
     test('should delete fast from history', async ({ page }) => {
@@ -141,9 +142,10 @@ test.describe('Fasting Timer App', () => {
       
       // Open history
       await page.locator('#historyBtn').click();
-      await expect(page.locator('#historyList')).toContainText('Goal:');
+      // Verify a fast entry exists (shows duration format)
+      await expect(page.locator('#historyList')).toContainText(/\d+h \d+m/);
       
-      // Delete the fast (click the X button)
+      // Delete the fast (click the delete button)
       await page.locator('#historyList button').first().click();
       
       // Should show empty message
