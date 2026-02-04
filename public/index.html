@@ -60,87 +60,158 @@
             }
         }
     </script>
+    <style>
+        /* Screen reader only utility */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+        .sr-only-focusable:focus {
+            position: static;
+            width: auto;
+            height: auto;
+            padding: 1rem;
+            margin: 0;
+            overflow: visible;
+            clip: auto;
+            white-space: normal;
+        }
+        /* Skip link styles */
+        .skip-link {
+            position: absolute;
+            top: -100%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            padding: 1rem 2rem;
+            background: #1e293b;
+            color: white;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .skip-link:focus {
+            top: 1rem;
+        }
+        /* Focus visible styles for better keyboard navigation */
+        :focus-visible {
+            outline: 3px solid #10b981;
+            outline-offset: 2px;
+        }
+        /* Reduced motion preference */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
 </head>
 <body class="bg-gradient-to-br from-slate-900 to-slate-800 dark:from-slate-950 dark:to-slate-900 min-h-screen flex items-center justify-center p-4 transition-colors duration-300">
 
+<!-- Skip Link for keyboard navigation -->
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
 <!-- Toast Notification -->
-<div id="toast" class="fixed top-4 left-4 right-4 max-w-md mx-auto transform -translate-y-full opacity-0 transition-all duration-300 z-50 pointer-events-none">
+<div id="toast" role="alert" aria-live="assertive" aria-atomic="true" class="fixed top-4 left-4 right-4 max-w-md mx-auto transform -translate-y-full opacity-0 transition-all duration-300 z-50 pointer-events-none">
     <div class="bg-emerald-800 text-white rounded-xl shadow-lg overflow-hidden pointer-events-auto">
         <div class="flex items-center justify-between p-4">
             <div class="flex items-center gap-3">
-                <span class="text-2xl">🎉</span>
+                <span aria-hidden="true" class="text-2xl">🎉</span>
                 <div>
                     <div class="font-semibold">Fast Complete!</div>
                     <div id="toastMessage" class="text-sm text-emerald-100">You completed your 16h fast!</div>
                 </div>
             </div>
-            <button id="toastClose" class="p-1 hover:bg-emerald-900 rounded-lg transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <button id="toastClose" aria-label="Close notification" class="p-3 hover:bg-emerald-900 rounded-lg transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center">
+                <svg aria-hidden="true" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
             </button>
         </div>
         <!-- Progress bar -->
-        <div class="h-1 bg-emerald-900">
+        <div class="h-1 bg-emerald-900" role="presentation">
             <div id="toastProgress" class="h-full bg-emerald-300 transition-all ease-linear" style="width: 100%"></div>
         </div>
     </div>
 </div>
 
-<div class="w-full max-w-md">
+<main id="main-content" class="w-full max-w-md" role="main" aria-label="Fasting Timer Application">
     <!-- Main Timer Content -->
     <div class="p-8 text-center transition-colors duration-300">
+        <!-- Visually hidden h1 for screen readers -->
+        <h1 class="sr-only">Fasting Timer</h1>
+        
         <!-- Status Badge -->
         <div class="mb-6">
-                <span id="statusBadge" class="inline-block px-4 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-full text-sm font-medium transition-colors duration-300">
-                    <span id="statusText">Fasting</span> · <span id="goalDisplay">16h</span>
-                </span>
+            <span id="statusBadge" role="status" aria-live="polite" class="inline-block px-4 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-full text-sm font-medium transition-colors duration-300">
+                <span id="statusText">Fasting</span> · <span id="goalDisplay">16h</span>
+            </span>
         </div>
 
         <!-- Progress Circle with Timer -->
         <div class="mb-8 flex justify-center">
             <div class="relative w-64 h-64">
-                <svg class="transform -rotate-90 w-64 h-64">
+                <svg class="transform -rotate-90 w-64 h-64" role="img" aria-label="Fasting progress indicator">
+                    <title>Fasting progress circle</title>
                     <circle cx="128" cy="128" r="120" stroke="#e2e8f0" class="dark:stroke-slate-700 transition-colors duration-300" stroke-width="8" fill="none"/>
                     <circle id="progressCircle" cx="128" cy="128" r="120" stroke="#10b981" class="transition-all duration-1000 ease-out" stroke-width="8" fill="none"
                             stroke-dasharray="753.98" stroke-dashoffset="753.98" stroke-linecap="round"/>
                 </svg>
+                <!-- Hidden progress element for screen readers -->
+                <div id="progressAnnouncer" class="sr-only" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Fasting progress">
+                    0% complete
+                </div>
                 <div class="absolute inset-0 flex flex-col items-center justify-center">
-                    <div id="timerDisplay" class="text-4xl font-semibold text-white transition-colors duration-300 mb-2">
+                    <div id="timerDisplay" aria-live="off" aria-atomic="true" class="text-4xl font-semibold text-white transition-colors duration-300 mb-2">
                         00:00:00
                     </div>
+                    <!-- Hidden live region that updates less frequently for screen readers -->
+                    <div id="timerAnnouncer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+                    
                     <div id="zoneContainer">
                         <div id="zoneBadge" class="pl-1.5 pr-3 py-1 rounded-full text-sm font-medium flex items-center gap-1 mx-auto w-fit" style="background-color: rgba(148, 163, 184, 0.19); color: #94a3b8;">
-                            <span id="zoneIcon">🍽️</span>
+                            <span id="zoneIcon" aria-hidden="true">🍽️</span>
                             <span id="zoneName">Fed</span>
+                            <span id="zoneDescription" class="sr-only">Current metabolic zone</span>
                         </div>
                     </div>
-                    <button id="startTimeDisplay" class="hidden mt-3 text-xs text-slate-400 hover:text-slate-300 transition-colors flex items-center gap-1 cursor-pointer">
+                    <button id="startTimeDisplay" class="hidden mt-3 text-xs text-slate-400 hover:text-slate-300 transition-colors flex items-center gap-1 cursor-pointer min-h-[44px] px-3" aria-describedby="startTimeHint">
                         <span id="startTimeText">Started 8:30 PM</span>
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg aria-hidden="true" class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
                         </svg>
+                        <span class="sr-only">Click to edit start time</span>
                     </button>
+                    <span id="startTimeHint" class="sr-only">Activating this button will open a dialog to edit when your fast started</span>
                 </div>
             </div>
         </div>
 
         <!-- Action Button -->
         <button id="actionButton"
-                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 rounded-xl transition-colors duration-200 shadow-lg">
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 rounded-xl transition-colors duration-200 shadow-lg min-h-[44px]">
             End Fast
         </button>
 
         <!-- Secondary Actions -->
         <div class="mt-4 flex gap-2">
-            <button id="historyBtn" class="flex-1 flex items-center justify-center gap-2 text-white/90 border-2 border-white/30 hover:border-white/50 hover:bg-white/5 text-sm font-medium py-3 px-4 rounded-xl transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <button id="historyBtn" class="flex-1 flex items-center justify-center gap-2 text-white/90 border-2 border-white/30 hover:border-white/50 hover:bg-white/5 text-sm font-medium py-3 px-4 rounded-xl transition-colors min-h-[44px]">
+                <svg aria-hidden="true" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
                 History
             </button>
-            <button id="settingsBtn" class="flex-1 flex items-center justify-center gap-2 text-white/90 border-2 border-white/30 hover:border-white/50 hover:bg-white/5 text-sm font-medium py-3 px-4 rounded-xl transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <button id="settingsBtn" class="flex-1 flex items-center justify-center gap-2 text-white/90 border-2 border-white/30 hover:border-white/50 hover:bg-white/5 text-sm font-medium py-3 px-4 rounded-xl transition-colors min-h-[44px]">
+                <svg aria-hidden="true" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                 </svg>
@@ -153,15 +224,15 @@
             Zone timings are approximate and vary by individual
         </div>
     </div>
-</div>
+</main>
 
 <!-- Settings Modal -->
-<div id="settingsModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-8 z-50">
-    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6 m-6 transition-colors duration-300">
+<div id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settingsModalTitle" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-8 z-50">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6 m-6 transition-colors duration-300" role="document">
         <div class="flex items-center justify-between mb-6">
-            <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-100">Settings</h2>
-            <button id="closeModalBtn" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <h2 id="settingsModalTitle" class="text-2xl font-bold text-slate-800 dark:text-slate-100">Settings</h2>
+            <button id="closeModalBtn" aria-label="Close settings dialog" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors p-2 min-w-[44px] min-h-[44px] flex items-center justify-center">
+                <svg aria-hidden="true" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
             </button>
@@ -170,10 +241,10 @@
         <!-- Fasting Duration Setting -->
         <div class="py-4 border-b border-slate-200 dark:border-slate-700">
             <div class="mb-3">
-                <div class="font-medium text-slate-800 dark:text-slate-100">Default Fasting Duration</div>
-                <div class="text-sm text-slate-500 dark:text-slate-400">Choose your typical fasting goal</div>
+                <div id="durationLabel" class="font-medium text-slate-800 dark:text-slate-100">Default Fasting Duration</div>
+                <div id="durationDescription" class="text-sm text-slate-500 dark:text-slate-400">Choose your typical fasting goal</div>
             </div>
-            <div id="durationButtons" class="grid grid-cols-3 gap-2">
+            <div id="durationButtons" role="group" aria-labelledby="durationLabel" aria-describedby="durationDescription" class="grid grid-cols-3 gap-2">
                 <!-- Duration buttons will be generated here -->
             </div>
         </div>
@@ -181,27 +252,29 @@
         <!-- Theme Toggle Setting -->
         <div class="flex items-center justify-between py-4 border-b border-slate-200 dark:border-slate-700">
             <div>
-                <div class="font-medium text-slate-800 dark:text-slate-100">Theme</div>
-                <div class="text-sm text-slate-500 dark:text-slate-400">Choose light or dark mode</div>
+                <div id="themeLabel" class="font-medium text-slate-800 dark:text-slate-100">Theme</div>
+                <div id="themeDescription" class="text-sm text-slate-500 dark:text-slate-400">Choose light or dark mode</div>
             </div>
-            <button id="themeToggleBtn" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
-                <svg id="sunIcon" class="w-6 h-6 text-slate-800 dark:text-slate-100 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <button id="themeToggleBtn" aria-pressed="false" aria-labelledby="themeLabel" aria-describedby="themeDescription" class="p-3 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center">
+                <svg id="sunIcon" aria-hidden="true" class="w-6 h-6 text-slate-800 dark:text-slate-100 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
                 </svg>
-                <svg id="moonIcon" class="w-6 h-6 text-slate-800 dark:text-slate-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg id="moonIcon" aria-hidden="true" class="w-6 h-6 text-slate-800 dark:text-slate-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
                 </svg>
+                <span class="sr-only" id="themeToggleStatus">Currently dark mode</span>
             </button>
         </div>
 
         <!-- Show Zones Toggle Setting -->
         <div class="flex items-center justify-between py-4 border-b border-slate-200 dark:border-slate-700">
             <div>
-                <div class="font-medium text-slate-800 dark:text-slate-100">Show Fasting Zones</div>
-                <div class="text-sm text-slate-500 dark:text-slate-400">Display metabolic zone indicator</div>
+                <div id="zonesLabel" class="font-medium text-slate-800 dark:text-slate-100">Show Fasting Zones</div>
+                <div id="zonesDescription" class="text-sm text-slate-500 dark:text-slate-400">Display metabolic zone indicator</div>
             </div>
-            <button id="showZonesBtn" class="relative w-12 h-7 rounded-full transition-colors bg-emerald-500">
-                <span id="showZonesToggle" class="absolute left-1 top-1 w-5 h-5 bg-white rounded-full shadow transition-transform translate-x-5"></span>
+            <button id="showZonesBtn" role="switch" aria-checked="true" aria-labelledby="zonesLabel" aria-describedby="zonesDescription" class="relative w-12 h-7 rounded-full transition-colors bg-emerald-500 min-w-[48px]">
+                <span id="showZonesToggle" aria-hidden="true" class="absolute left-1 top-1 w-5 h-5 bg-white rounded-full shadow transition-transform translate-x-5"></span>
+                <span class="sr-only">Fasting zones are currently shown</span>
             </button>
         </div>
 
@@ -212,12 +285,12 @@
                 <div class="text-sm text-slate-500 dark:text-slate-400">Export or import your fasting history</div>
             </div>
             <div class="flex gap-2">
-                <button id="exportDataBtn" class="flex-1 py-2 px-4 rounded-lg border-2 border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:border-emerald-500 dark:hover:border-emerald-500 transition-colors text-sm font-medium">
-                    Export
+                <button id="exportDataBtn" class="flex-1 py-3 px-4 rounded-lg border-2 border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:border-emerald-500 dark:hover:border-emerald-500 transition-colors text-sm font-medium min-h-[44px]">
+                    Export Data
                 </button>
-                <label class="flex-1 py-2 px-4 rounded-lg border-2 border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:border-emerald-500 dark:hover:border-emerald-500 transition-colors text-sm font-medium text-center cursor-pointer">
-                    Import
-                    <input type="file" id="importFileInput" accept=".json" class="hidden">
+                <label class="flex-1 py-3 px-4 rounded-lg border-2 border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:border-emerald-500 dark:hover:border-emerald-500 transition-colors text-sm font-medium text-center cursor-pointer min-h-[44px] flex items-center justify-center">
+                    <span>Import Data</span>
+                    <input type="file" id="importFileInput" accept=".json" class="sr-only">
                 </label>
             </div>
         </div>
@@ -225,31 +298,31 @@
 </div>
 
 <!-- History Modal -->
-<div id="historyModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-8 z-50">
-    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6 m-6 transition-colors duration-300 max-h-[80vh] flex flex-col">
+<div id="historyModal" role="dialog" aria-modal="true" aria-labelledby="historyModalTitle" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-8 z-50">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6 m-6 transition-colors duration-300 max-h-[80vh] flex flex-col" role="document">
         <div class="flex items-center justify-between mb-6">
-            <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-100">History</h2>
-            <button id="closeHistoryBtn" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <h2 id="historyModalTitle" class="text-2xl font-bold text-slate-800 dark:text-slate-100">History</h2>
+            <button id="closeHistoryBtn" aria-label="Close history dialog" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors p-2 min-w-[44px] min-h-[44px] flex items-center justify-center">
+                <svg aria-hidden="true" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
             </button>
         </div>
 
         <!-- History List -->
-        <div id="historyList" class="overflow-y-auto flex-1 pr-4">
+        <div id="historyList" class="overflow-y-auto flex-1 pr-4" role="list" aria-label="Fasting history">
             <!-- History items will be inserted here -->
         </div>
     </div>
 </div>
 
 <!-- Edit Start Time Modal -->
-<div id="editStartTimeModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-8 z-50">
-    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6 m-6 transition-colors duration-300">
+<div id="editStartTimeModal" role="dialog" aria-modal="true" aria-labelledby="editStartTimeTitle" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-8 z-50">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6 m-6 transition-colors duration-300" role="document">
         <div class="flex items-center justify-between mb-6">
-            <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-100">Edit Start Time</h2>
-            <button id="closeEditStartTimeBtn" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <h2 id="editStartTimeTitle" class="text-2xl font-bold text-slate-800 dark:text-slate-100">Edit Start Time</h2>
+            <button id="closeEditStartTimeBtn" aria-label="Close edit start time dialog" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors p-2 min-w-[44px] min-h-[44px] flex items-center justify-center">
+                <svg aria-hidden="true" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
             </button>
@@ -258,14 +331,14 @@
         <div class="space-y-4">
             <div>
                 <label for="editStartDate" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Date</label>
-                <input type="date" id="editStartDate" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:border-emerald-500 dark:focus:border-emerald-500 focus:outline-none transition-colors">
+                <input type="date" id="editStartDate" aria-describedby="editStartTimeError" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:border-emerald-500 dark:focus:border-emerald-500 focus:outline-none transition-colors min-h-[44px]">
             </div>
             <div>
                 <label for="editStartTime" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Time</label>
-                <input type="time" id="editStartTime" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:border-emerald-500 dark:focus:border-emerald-500 focus:outline-none transition-colors">
+                <input type="time" id="editStartTime" aria-describedby="editStartTimeError" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 focus:border-emerald-500 dark:focus:border-emerald-500 focus:outline-none transition-colors min-h-[44px]">
             </div>
-            <div id="editStartTimeError" class="hidden text-red-500 dark:text-red-400 text-sm"></div>
-            <button id="saveStartTimeBtn" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-semibold py-3 rounded-xl transition-colors duration-200 mt-4">
+            <div id="editStartTimeError" role="alert" aria-live="assertive" class="hidden text-red-500 dark:text-red-400 text-sm"></div>
+            <button id="saveStartTimeBtn" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-semibold py-3 rounded-xl transition-colors duration-200 mt-4 min-h-[44px]">
                 Save Changes
             </button>
         </div>
@@ -273,18 +346,18 @@
 </div>
 
 <!-- Import Confirm Modal -->
-<div id="importConfirmModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-8 z-50">
-    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6 m-6 transition-colors duration-300">
-        <h2 class="text-xl font-bold text-slate-800 dark:text-slate-100 mb-4">Import Data</h2>
+<div id="importConfirmModal" role="alertdialog" aria-modal="true" aria-labelledby="importConfirmTitle" aria-describedby="importConfirmMessage" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-8 z-50">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6 m-6 transition-colors duration-300" role="document">
+        <h2 id="importConfirmTitle" class="text-xl font-bold text-slate-800 dark:text-slate-100 mb-4">Import Data</h2>
         <p id="importConfirmMessage" class="text-slate-600 dark:text-slate-400 mb-6">Found 0 fasts in file.</p>
         <div class="flex flex-col gap-3">
-            <button id="importMergeBtn" class="w-full py-3 px-4 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-medium transition-colors">
+            <button id="importMergeBtn" class="w-full py-3 px-4 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-medium transition-colors min-h-[44px]">
                 Merge (keep existing data)
             </button>
-            <button id="importReplaceBtn" class="w-full py-3 px-4 rounded-xl border-2 border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:border-red-500 dark:hover:border-red-500 hover:text-red-600 dark:hover:text-red-400 transition-colors font-medium">
+            <button id="importReplaceBtn" class="w-full py-3 px-4 rounded-xl border-2 border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:border-red-500 dark:hover:border-red-500 hover:text-red-600 dark:hover:text-red-400 transition-colors font-medium min-h-[44px]">
                 Replace all data
             </button>
-            <button id="importCancelBtn" class="w-full py-3 px-4 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors font-medium">
+            <button id="importCancelBtn" class="w-full py-3 px-4 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors font-medium min-h-[44px]">
                 Cancel
             </button>
         </div>
@@ -303,6 +376,8 @@
     let showZones = true;
     let toastTimeout = null;
     let toastAnimationFrame = null;
+    let lastAnnouncedMinute = -1; // Track last announced minute for screen readers
+    let focusedElementBeforeModal = null; // Track focus for modal management
 
     // Cache DOM elements
     const el = {};
@@ -310,10 +385,13 @@
     function initElements() {
         el.statusBadge = document.getElementById('statusBadge');
         el.timerDisplay = document.getElementById('timerDisplay');
+        el.timerAnnouncer = document.getElementById('timerAnnouncer');
+        el.progressAnnouncer = document.getElementById('progressAnnouncer');
         el.goalDisplay = document.getElementById('goalDisplay');
         el.progressCircle = document.getElementById('progressCircle');
         el.actionButton = document.getElementById('actionButton');
         el.themeToggleBtn = document.getElementById('themeToggleBtn');
+        el.themeToggleStatus = document.getElementById('themeToggleStatus');
         el.sunIcon = document.getElementById('sunIcon');
         el.moonIcon = document.getElementById('moonIcon');
         el.settingsBtn = document.getElementById('settingsBtn');
@@ -357,8 +435,10 @@
 
     function createDurationButtons() {
         el.durationButtons.innerHTML = DURATION_OPTIONS.map(hours => `
-                <button onclick="setDefaultDuration(${hours})" id="duration-${hours}" class="${CLASSES.durationUnselected}">
-                    ${hours}h
+                <button onclick="setDefaultDuration(${hours})" id="duration-${hours}" 
+                        aria-pressed="false"
+                        class="${CLASSES.durationUnselected} min-h-[44px]">
+                    ${hours} hours
                 </button>
             `).join('');
     }
@@ -374,24 +454,70 @@
     // Fasting zones configuration (AA compliant colors)
     // Note: Timings are approximate and vary by individual
     const FASTING_ZONES = [
-        { name: 'Fed', start: 0, color: '#94a3b8', icon: '🍽️' },
-        { name: 'Post-Absorptive', start: 3, color: '#a78bfa', icon: '⏳' },
-        { name: 'Glycogen Depletion', start: 8, color: '#60a5fa', icon: '💪' },
-        { name: 'Fat Burning', start: 14, color: '#fbbf24', icon: '🔥' },
-        { name: 'Ketosis', start: 20, color: '#34d399', icon: '⚡' },
-        { name: 'Deep Ketosis', start: 36, color: '#f472b6', icon: '✨' },
+        { name: 'Fed', start: 0, color: '#94a3b8', icon: '🍽️', description: 'Body is digesting food' },
+        { name: 'Post-Absorptive', start: 3, color: '#a78bfa', icon: '⏳', description: 'Transitioning from fed state' },
+        { name: 'Glycogen Depletion', start: 8, color: '#60a5fa', icon: '💪', description: 'Using stored glucose' },
+        { name: 'Fat Burning', start: 14, color: '#fbbf24', icon: '🔥', description: 'Body burning fat for energy' },
+        { name: 'Ketosis', start: 20, color: '#34d399', icon: '⚡', description: 'Producing ketones' },
+        { name: 'Deep Ketosis', start: 36, color: '#f472b6', icon: '✨', description: 'Enhanced ketone production' },
     ];
 
     // CSS class constants
     const CLASSES = {
         statusFasting: 'inline-block px-4 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-full text-sm font-medium transition-colors duration-300',
         statusIdle: 'inline-block px-4 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-full text-sm font-medium transition-colors duration-300',
-        buttonEnd: 'w-full border-2 border-white/40 hover:border-white/60 hover:bg-white/10 text-white font-semibold py-4 rounded-xl transition-colors duration-200',
-        buttonComplete: 'w-full border-2 border-emerald-700 bg-emerald-700 hover:bg-emerald-800 hover:border-emerald-800 text-white font-semibold py-4 rounded-xl transition-colors duration-200 shadow-lg',
-        buttonStart: 'w-full border-2 border-emerald-700 bg-emerald-700 hover:bg-emerald-800 hover:border-emerald-800 text-white font-semibold py-4 rounded-xl transition-colors duration-200 shadow-lg',
+        buttonEnd: 'w-full border-2 border-white/40 hover:border-white/60 hover:bg-white/10 text-white font-semibold py-4 rounded-xl transition-colors duration-200 min-h-[44px]',
+        buttonComplete: 'w-full border-2 border-emerald-700 bg-emerald-700 hover:bg-emerald-800 hover:border-emerald-800 text-white font-semibold py-4 rounded-xl transition-colors duration-200 shadow-lg min-h-[44px]',
+        buttonStart: 'w-full border-2 border-emerald-700 bg-emerald-700 hover:bg-emerald-800 hover:border-emerald-800 text-white font-semibold py-4 rounded-xl transition-colors duration-200 shadow-lg min-h-[44px]',
         durationSelected: 'py-3 px-4 rounded-lg border-2 border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 transition-colors text-sm font-medium',
         durationUnselected: 'py-3 px-4 rounded-lg border-2 border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:border-emerald-500 dark:hover:border-emerald-500 transition-colors text-sm font-medium'
     };
+
+    // Focus trap for modals (WCAG 2.4.3)
+    function trapFocus(modal) {
+        const focusableElements = modal.querySelectorAll(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+
+        function handleKeyDown(e) {
+            if (e.key === 'Tab') {
+                if (e.shiftKey && document.activeElement === firstElement) {
+                    e.preventDefault();
+                    lastElement.focus();
+                } else if (!e.shiftKey && document.activeElement === lastElement) {
+                    e.preventDefault();
+                    firstElement.focus();
+                }
+            }
+            if (e.key === 'Escape') {
+                closeAllModals();
+            }
+        }
+
+        modal.addEventListener('keydown', handleKeyDown);
+        modal._focusTrapHandler = handleKeyDown;
+        
+        // Focus first element
+        if (firstElement) {
+            firstElement.focus();
+        }
+    }
+
+    function removeFocusTrap(modal) {
+        if (modal._focusTrapHandler) {
+            modal.removeEventListener('keydown', modal._focusTrapHandler);
+            delete modal._focusTrapHandler;
+        }
+    }
+
+    function closeAllModals() {
+        closeSettingsModal();
+        closeHistoryModal();
+        closeEditStartTimeModal();
+        cancelImport();
+    }
 
     // Toast notification functions
     function showToast(message) {
@@ -440,6 +566,34 @@
         el.toast.classList.remove('translate-y-0', 'opacity-100');
     }
 
+    // Pause toast timeout on hover/focus for accessibility (WCAG 2.2.6)
+    function initToastPauseOnInteraction() {
+        el.toast.addEventListener('mouseenter', () => {
+            if (toastTimeout) {
+                clearTimeout(toastTimeout);
+                el.toastProgress.style.animationPlayState = 'paused';
+            }
+        });
+        
+        el.toast.addEventListener('mouseleave', () => {
+            toastTimeout = setTimeout(() => {
+                hideToast();
+            }, 3000); // Give extra time after hover
+        });
+        
+        el.toast.addEventListener('focusin', () => {
+            if (toastTimeout) {
+                clearTimeout(toastTimeout);
+            }
+        });
+        
+        el.toast.addEventListener('focusout', () => {
+            toastTimeout = setTimeout(() => {
+                hideToast();
+            }, 3000);
+        });
+    }
+
     // Theme management
     function initTheme() {
         const data = loadData();
@@ -448,10 +602,14 @@
             document.documentElement.classList.add('dark');
             el.sunIcon.classList.remove('hidden');
             el.moonIcon.classList.add('hidden');
+            el.themeToggleBtn.setAttribute('aria-pressed', 'true');
+            el.themeToggleStatus.textContent = 'Currently dark mode';
         } else {
             document.documentElement.classList.remove('dark');
             el.sunIcon.classList.add('hidden');
             el.moonIcon.classList.remove('hidden');
+            el.themeToggleBtn.setAttribute('aria-pressed', 'false');
+            el.themeToggleStatus.textContent = 'Currently light mode';
         }
     }
 
@@ -459,6 +617,10 @@
         const isDark = document.documentElement.classList.toggle('dark');
         el.sunIcon.classList.toggle('hidden');
         el.moonIcon.classList.toggle('hidden');
+        
+        // Update ARIA state
+        el.themeToggleBtn.setAttribute('aria-pressed', isDark.toString());
+        el.themeToggleStatus.textContent = isDark ? 'Currently dark mode' : 'Currently light mode';
 
         const data = loadData() || { history: [] };
         data.settings = data.settings || {};
@@ -528,7 +690,8 @@
         DURATION_OPTIONS.forEach(hours => {
             const btn = document.getElementById(`duration-${hours}`);
             if (btn) {
-                btn.className = hours === selectedHours ? CLASSES.durationSelected : CLASSES.durationUnselected;
+                btn.className = (hours === selectedHours ? CLASSES.durationSelected : CLASSES.durationUnselected) + ' min-h-[44px]';
+                btn.setAttribute('aria-pressed', (hours === selectedHours).toString());
             }
         });
     }
@@ -617,7 +780,7 @@
                 }
                 
                 el.importConfirmMessage.textContent = message;
-                el.importConfirmModal.classList.remove('hidden');
+                openModal(el.importConfirmModal);
 
             } catch (err) {
                 showImportError('Failed to import: Invalid file format.');
@@ -696,13 +859,13 @@
         }
 
         pendingImportData = null;
-        el.importConfirmModal.classList.add('hidden');
+        closeModal(el.importConfirmModal);
         closeSettingsModal();
     }
 
     function cancelImport() {
         pendingImportData = null;
-        el.importConfirmModal.classList.add('hidden');
+        closeModal(el.importConfirmModal);
     }
 
     function showImportError(message) {
@@ -710,7 +873,7 @@
         el.importMergeBtn.classList.add('hidden');
         el.importReplaceBtn.classList.add('hidden');
         el.importCancelBtn.textContent = 'OK';
-        el.importConfirmModal.classList.remove('hidden');
+        openModal(el.importConfirmModal);
     }
 
     function resetImportModal() {
@@ -788,11 +951,27 @@
         }
     }
 
+    // Generic modal management with focus trapping
+    function openModal(modal) {
+        focusedElementBeforeModal = document.activeElement;
+        modal.classList.remove('hidden');
+        trapFocus(modal);
+    }
+
+    function closeModal(modal) {
+        modal.classList.add('hidden');
+        removeFocusTrap(modal);
+        if (focusedElementBeforeModal) {
+            focusedElementBeforeModal.focus();
+        }
+    }
+
     // Initialize
     function init() {
         initElements();
         initTheme();
         initShowZones();
+        initToastPauseOnInteraction();
         registerServiceWorker();
 
         el.themeToggleBtn.addEventListener('click', toggleTheme);
@@ -889,10 +1068,14 @@
             el.showZonesBtn.classList.remove('bg-slate-200', 'dark:bg-slate-600');
             el.showZonesBtn.classList.add('bg-emerald-500');
             el.showZonesToggle.classList.add('translate-x-5');
+            el.showZonesBtn.setAttribute('aria-checked', 'true');
+            el.showZonesBtn.querySelector('.sr-only').textContent = 'Fasting zones are currently shown';
         } else {
             el.showZonesBtn.classList.add('bg-slate-200', 'dark:bg-slate-600');
             el.showZonesBtn.classList.remove('bg-emerald-500');
             el.showZonesToggle.classList.remove('translate-x-5');
+            el.showZonesBtn.setAttribute('aria-checked', 'false');
+            el.showZonesBtn.querySelector('.sr-only').textContent = 'Fasting zones are currently hidden';
         }
     }
 
@@ -946,20 +1129,20 @@
     function openSettingsModal() {
         const defaultDuration = getDefaultDuration();
         updateDurationButtons(defaultDuration);
-        el.settingsModal.classList.remove('hidden');
+        openModal(el.settingsModal);
     }
 
     function closeSettingsModal() {
-        el.settingsModal.classList.add('hidden');
+        closeModal(el.settingsModal);
     }
 
     function openHistoryModal() {
         loadHistory();
-        el.historyModal.classList.remove('hidden');
+        openModal(el.historyModal);
     }
 
     function closeHistoryModal() {
-        el.historyModal.classList.add('hidden');
+        closeModal(el.historyModal);
     }
 
     function openEditStartTimeModal() {
@@ -982,11 +1165,11 @@
         // Hide any previous error
         el.editStartTimeError.classList.add('hidden');
         
-        el.editStartTimeModal.classList.remove('hidden');
+        openModal(el.editStartTimeModal);
     }
 
     function closeEditStartTimeModal() {
-        el.editStartTimeModal.classList.add('hidden');
+        closeModal(el.editStartTimeModal);
     }
 
     function saveEditedStartTime() {
@@ -1000,89 +1183,70 @@
         }
         
         // Parse the new start time
-        const newStartTime = new Date(`${dateValue}T${timeValue}`).getTime();
-        const now = Date.now();
+        const [year, month, day] = dateValue.split('-').map(Number);
+        const [hours, minutes] = timeValue.split(':').map(Number);
+        const newStartTime = new Date(year, month - 1, day, hours, minutes).getTime();
         
-        // Validate: start time cannot be in the future
-        if (newStartTime > now) {
+        // Validate: cannot be in the future
+        if (newStartTime > Date.now()) {
             el.editStartTimeError.textContent = 'Start time cannot be in the future.';
             el.editStartTimeError.classList.remove('hidden');
             return;
         }
         
-        // Validate: start time cannot be more than 7 days ago (reasonable limit)
-        const sevenDaysAgo = now - (7 * 24 * MS_PER_HOUR);
-        if (newStartTime < sevenDaysAgo) {
-            el.editStartTimeError.textContent = 'Start time cannot be more than 7 days ago.';
-            el.editStartTimeError.classList.remove('hidden');
-            return;
-        }
-        
-        // Update the fast start time
+        // Update the start time
         fastStartTime = newStartTime;
-        
-        // Reset notification if we're now before the goal
-        const elapsed = now - fastStartTime;
-        const goalMs = goalHours * MS_PER_HOUR;
-        if (elapsed < goalMs) {
-            goalReachedNotified = false;
-            el.actionButton.textContent = 'End Fast';
-            el.actionButton.className = CLASSES.buttonEnd;
-        } else if (!goalReachedNotified) {
-            // If we're past the goal but haven't notified, check now
-            checkGoalReached();
-        }
-        
-        // Save to localStorage
         saveCurrentFast();
-        
-        // Update the display immediately
-        updateDisplay();
         updateStartTimeDisplay();
+        updateDisplay();
         
-        // Close the modal
         closeEditStartTimeModal();
     }
 
     function loadHistory() {
         const data = loadData();
-        const history = data?.history || [];
-
-        if (history.length === 0) {
+        if (!data || !data.history || data.history.length === 0) {
             el.historyList.innerHTML = `
-                    <div class="text-center text-slate-500 dark:text-slate-400 py-8">
-                        No fasting history yet. Start your first fast!
+                    <div class="text-center text-slate-500 dark:text-slate-400 py-8" role="status">
+                        No fasting history yet.
+                        <br><span class="text-sm">Complete a fast to see it here!</span>
                     </div>
                 `;
             return;
         }
 
-        // Sort by start time (most recent first) and build HTML
-        const sortedHistory = [...history].sort((a, b) => b.startTime - a.startTime);
+        // Sort by start time, newest first
+        const sortedHistory = [...data.history].sort((a, b) => b.startTime - a.startTime);
 
-        // Use DocumentFragment for better performance
+        // Use a temporary container to build the HTML
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = sortedHistory.map(fast => {
             const startDate = new Date(fast.startTime);
             const endDate = new Date(fast.endTime);
             const hours = Math.floor(fast.duration);
-            const minutes = Math.round((fast.duration - hours) * 60);
+            const mins = Math.round((fast.duration - hours) * 60);
+            const durationStr = hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
             const reachedGoal = fast.duration >= fast.goalHours;
+            const goalIcon = reachedGoal ? '✓' : '✗';
+            const goalColorClass = reachedGoal
+                ? 'text-emerald-500 dark:text-emerald-400'
+                : 'text-slate-400 dark:text-slate-500';
 
             return `
-                    <div class="flex items-center justify-between py-3 border-b border-slate-100 dark:border-slate-700 last:border-0">
-                        <div class="flex-1">
-                            <div class="flex items-center gap-2">
-                                <span class="font-medium text-slate-800 dark:text-slate-100">${hours}h ${minutes}m</span>
-                                ${reachedGoal ? '<span class="text-emerald-500">✓</span>' : `<span class="text-slate-400 text-sm">/ ${fast.goalHours}h</span>`}
+                    <div class="flex items-center justify-between py-4 border-b border-slate-200 dark:border-slate-700 last:border-0" role="listitem">
+                        <div>
+                            <div class="font-medium text-slate-800 dark:text-slate-100">
+                                <span class="${goalColorClass}" aria-label="${reachedGoal ? 'Goal reached' : 'Goal not reached'}">${goalIcon}</span>
+                                ${durationStr}
+                                <span class="text-sm text-slate-500 dark:text-slate-400">/ ${fast.goalHours}h goal</span>
                             </div>
                             <div class="text-sm text-slate-500 dark:text-slate-400">
                                 ${startDate.toLocaleDateString()} ${startDate.toLocaleTimeString([], {hour: 'numeric', minute: '2-digit'})}
                                 → ${endDate.toLocaleTimeString([], {hour: 'numeric', minute: '2-digit'})}
                             </div>
                         </div>
-                        <button onclick="deleteFast(${fast.id})" class="p-2 text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition-colors" title="Delete">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <button onclick="deleteFast(${fast.id})" class="p-3 text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center" aria-label="Delete fast from ${startDate.toLocaleDateString()}">
+                            <svg aria-hidden="true" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                             </svg>
                         </button>
@@ -1113,6 +1277,7 @@
         goalHours = hours;
         isFasting = true;
         goalReachedNotified = false;
+        lastAnnouncedMinute = -1;
 
         saveCurrentFast();
         updateDisplay();
@@ -1168,6 +1333,11 @@
         // Reset zone display
         currentZoneIndex = -1; // Force update
         updateZoneDisplay(0);
+        
+        // Update screen reader announcements
+        el.progressAnnouncer.setAttribute('aria-valuenow', '0');
+        el.progressAnnouncer.textContent = '0% complete';
+        el.timerAnnouncer.textContent = '';
     }
 
     function getCurrentZone(elapsedHours) {
@@ -1225,6 +1395,26 @@
         const progress = Math.min((elapsed / goalMs) * 100, 100);
         const offset = CIRCUMFERENCE - (progress / 100) * CIRCUMFERENCE;
         el.progressCircle.style.strokeDashoffset = offset;
+
+        // Update screen reader progress announcer every minute (not every second)
+        const currentMinute = hours * 60 + minutes;
+        if (currentMinute !== lastAnnouncedMinute) {
+            lastAnnouncedMinute = currentMinute;
+            
+            // Update progress bar for screen readers
+            el.progressAnnouncer.setAttribute('aria-valuenow', Math.round(progress).toString());
+            el.progressAnnouncer.textContent = `${Math.round(progress)}% complete`;
+            
+            // Announce time every 5 minutes to avoid being too verbose
+            if (currentMinute % 5 === 0) {
+                let announcement = `${hours} hours and ${minutes} minutes elapsed`;
+                if (showZones) {
+                    const zone = FASTING_ZONES[currentZoneIndex];
+                    announcement += `. Currently in ${zone.name} zone`;
+                }
+                el.timerAnnouncer.textContent = announcement;
+            }
+        }
 
         // Update fasting zone
         const elapsedHours = elapsed / MS_PER_HOUR;
