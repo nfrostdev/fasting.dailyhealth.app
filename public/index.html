@@ -1060,35 +1060,9 @@
     }
 
     // PWA Service Worker Registration
-    // Fixed: Now revokes blob URL after registration to prevent memory leak
     function registerServiceWorker() {
         if ('serviceWorker' in navigator) {
-            // Create service worker inline
-            const swCode = `
-                    self.addEventListener('install', (e) => {
-                        self.skipWaiting();
-                    });
-                    
-                    self.addEventListener('activate', (e) => {
-                        self.clients.claim();
-                    });
-                    
-                    self.addEventListener('fetch', (e) => {
-                        // Network first strategy
-                        e.respondWith(
-                            fetch(e.request).catch(() => {
-                                return new Response('Offline');
-                            })
-                        );
-                    });
-                `;
-
-            const blob = new Blob([swCode], { type: 'application/javascript' });
-            const swUrl = URL.createObjectURL(blob);
-
-            navigator.serviceWorker.register(swUrl)
-                .then(() => URL.revokeObjectURL(swUrl))
-                .catch(() => URL.revokeObjectURL(swUrl));
+            navigator.serviceWorker.register('/sw.js').catch(() => {});
         }
     }
 

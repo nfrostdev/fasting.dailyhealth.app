@@ -11,3 +11,7 @@ playwright/.cache/
 Thumbs.db
 .idea
 .firebase
+
+# Build stuff
+public/styles.css
+public/sw.js
