@@ -1196,11 +1196,19 @@
         
         // Update the start time
         fastStartTime = newStartTime;
+        
+        // Reset goal notification flag to allow re-checking
+        // (user may have changed start time to trigger or un-trigger goal)
+        goalReachedNotified = false;
+        
         saveCurrentFast();
         updateStartTimeDisplay();
         updateDisplay();
         
         closeEditStartTimeModal();
+        
+        // Check if goal is now reached with the new start time
+        checkGoalReached();
     }
 
     function loadHistory() {
@@ -1225,7 +1233,7 @@
             const endDate = new Date(fast.endTime);
             const hours = Math.floor(fast.duration);
             const mins = Math.round((fast.duration - hours) * 60);
-            const durationStr = hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
+            const durationStr = `${hours}h ${mins}m`;
             const reachedGoal = fast.duration >= fast.goalHours;
             const goalIcon = reachedGoal ? '✓' : '✗';
             const goalColorClass = reachedGoal
