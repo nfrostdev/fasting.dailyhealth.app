@@ -568,29 +568,38 @@
 
     // Pause toast timeout on hover/focus for accessibility (WCAG 2.2.6)
     function initToastPauseOnInteraction() {
+        // Helper to check if toast is currently visible
+        const isToastVisible = () => el.toast.classList.contains('opacity-100');
+        
         el.toast.addEventListener('mouseenter', () => {
-            if (toastTimeout) {
+            if (toastTimeout && isToastVisible()) {
                 clearTimeout(toastTimeout);
                 el.toastProgress.style.animationPlayState = 'paused';
             }
         });
         
         el.toast.addEventListener('mouseleave', () => {
-            toastTimeout = setTimeout(() => {
-                hideToast();
-            }, 3000); // Give extra time after hover
+            // Only set hide timeout if toast is actually visible
+            if (isToastVisible()) {
+                toastTimeout = setTimeout(() => {
+                    hideToast();
+                }, 3000); // Give extra time after hover
+            }
         });
         
         el.toast.addEventListener('focusin', () => {
-            if (toastTimeout) {
+            if (toastTimeout && isToastVisible()) {
                 clearTimeout(toastTimeout);
             }
         });
         
         el.toast.addEventListener('focusout', () => {
-            toastTimeout = setTimeout(() => {
-                hideToast();
-            }, 3000);
+            // Only set hide timeout if toast is actually visible
+            if (isToastVisible()) {
+                toastTimeout = setTimeout(() => {
+                    hideToast();
+                }, 3000);
+            }
         });
     }
 
