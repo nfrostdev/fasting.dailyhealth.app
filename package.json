@@ -1,0 +1,16 @@
+{
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.18",
+    "tailwindcss": "^4.1.18"
+  },
+  "name": "fasting.dailyhealth.app",
+  "version": "1.0.0",
+  "description": "A simple, privacy-focused intermittent fasting tracker. No sign-up, no tracking.",
+  "main": "index.js",
+  "scripts": {
+    "build": "tailwindcss -i src/input.css -o public/styles.css --minify"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
