@@ -144,7 +144,7 @@
     </div>
 </div>
 
-<main id="main-content" class="w-full max-w-md" role="main" aria-label="Fasting Timer Application">
+<main id="main-content" class="w-full max-w-md" aria-label="Fasting Timer Application">
     <!-- Main Timer Content -->
     <div class="p-8 text-center transition-colors duration-300">
         <!-- Visually hidden h1 for screen readers -->
@@ -375,9 +375,11 @@
     let currentZoneIndex = 0;
     let showZones = true;
     let toastTimeout = null;
-    let toastAnimationFrame = null;
+    let toastStartTime = null;
+    let toastRemainingTime = 0;
     let lastAnnouncedMinute = -1; // Track last announced minute for screen readers
     let focusedElementBeforeModal = null; // Track focus for modal management
+    let lastDisplayedTime = ''; // Track last displayed time to avoid unnecessary DOM updates
 
     // Cache DOM elements
     const el = {};
@@ -434,13 +436,22 @@
     }
 
     function createDurationButtons() {
+        // Create buttons without inline onclick handlers
         el.durationButtons.innerHTML = DURATION_OPTIONS.map(hours => `
-                <button onclick="setDefaultDuration(${hours})" id="duration-${hours}" 
+                <button data-duration="${hours}" id="duration-${hours}" 
                         aria-pressed="false"
                         class="${CLASSES.durationUnselected} min-h-[44px]">
                     ${hours} hours
                 </button>
             `).join('');
+        
+        // Use event delegation for duration buttons
+        el.durationButtons.addEventListener('click', (e) => {
+            const btn = e.target.closest('[data-duration]');
+            if (btn) {
+                setDefaultDuration(parseInt(btn.dataset.duration, 10));
+            }
+        });
     }
 
     // Constants
@@ -519,6 +530,13 @@
         cancelImport();
     }
 
+    // Helper function for backdrop click to close modals (DRY improvement)
+    function addBackdropClose(modal, closeFn) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeFn();
+        });
+    }
+
     // Toast notification functions
     function showToast(message) {
         // Clear any existing toast timeout
@@ -526,13 +544,13 @@
             clearTimeout(toastTimeout);
             toastTimeout = null;
         }
-        if (toastAnimationFrame) {
-            cancelAnimationFrame(toastAnimationFrame);
-            toastAnimationFrame = null;
-        }
 
         // Set the message
         el.toastMessage.textContent = message;
+
+        // Reset toast timing
+        toastRemainingTime = TOAST_DURATION;
+        toastStartTime = Date.now();
 
         // Reset progress bar
         el.toastProgress.style.transition = 'none';
@@ -545,7 +563,7 @@
         // Start the progress bar animation after a brief delay
         requestAnimationFrame(() => {
             requestAnimationFrame(() => {
-                el.toastProgress.style.transition = `width ${TOAST_DURATION}ms linear`;
+                el.toastProgress.style.transition = `width ${toastRemainingTime}ms linear`;
                 el.toastProgress.style.width = '0%';
             });
         });
@@ -553,7 +571,7 @@
         // Auto-dismiss after duration
         toastTimeout = setTimeout(() => {
             hideToast();
-        }, TOAST_DURATION);
+        }, toastRemainingTime);
     }
 
     function hideToast() {
@@ -567,40 +585,42 @@
     }
 
     // Pause toast timeout on hover/focus for accessibility (WCAG 2.2.6)
+    // Fixed: Now properly pauses and resumes the progress bar transition
     function initToastPauseOnInteraction() {
-        // Helper to check if toast is currently visible
         const isToastVisible = () => el.toast.classList.contains('opacity-100');
         
-        el.toast.addEventListener('mouseenter', () => {
+        function pauseToast() {
             if (toastTimeout && isToastVisible()) {
                 clearTimeout(toastTimeout);
-                el.toastProgress.style.animationPlayState = 'paused';
+                toastTimeout = null;
+                // Calculate remaining time
+                toastRemainingTime -= (Date.now() - toastStartTime);
+                // Pause the progress bar by getting current width and stopping transition
+                const computedWidth = getComputedStyle(el.toastProgress).width;
+                el.toastProgress.style.transition = 'none';
+                el.toastProgress.style.width = computedWidth;
             }
-        });
+        }
         
-        el.toast.addEventListener('mouseleave', () => {
-            // Only set hide timeout if toast is actually visible
-            if (isToastVisible()) {
+        function resumeToast() {
+            if (isToastVisible() && toastRemainingTime > 0) {
+                toastStartTime = Date.now();
+                // Resume progress bar animation
+                requestAnimationFrame(() => {
+                    el.toastProgress.style.transition = `width ${toastRemainingTime}ms linear`;
+                    el.toastProgress.style.width = '0%';
+                });
+                // Set timeout for remaining time
                 toastTimeout = setTimeout(() => {
                     hideToast();
-                }, 3000); // Give extra time after hover
+                }, toastRemainingTime);
             }
-        });
+        }
         
-        el.toast.addEventListener('focusin', () => {
-            if (toastTimeout && isToastVisible()) {
-                clearTimeout(toastTimeout);
-            }
-        });
-        
-        el.toast.addEventListener('focusout', () => {
-            // Only set hide timeout if toast is actually visible
-            if (isToastVisible()) {
-                toastTimeout = setTimeout(() => {
-                    hideToast();
-                }, 3000);
-            }
-        });
+        el.toast.addEventListener('mouseenter', pauseToast);
+        el.toast.addEventListener('mouseleave', resumeToast);
+        el.toast.addEventListener('focusin', pauseToast);
+        el.toast.addEventListener('focusout', resumeToast);
     }
 
     // Theme management
@@ -660,13 +680,13 @@
         }
     }
 
-    function updateStatusBadge(isFasting, hours) {
-        const text = isFasting ? 'Fasting' : 'Not Fasting';
+    function updateStatusBadge(isFastingNow, hours) {
+        const text = isFastingNow ? 'Fasting' : 'Not Fasting';
         el.statusBadge.innerHTML = `<span id="statusText">${text}</span> · <span id="goalDisplay">${hours}h</span>`;
-        el.statusBadge.className = isFasting ? CLASSES.statusFasting : CLASSES.statusIdle;
+        el.statusBadge.className = isFastingNow ? CLASSES.statusFasting : CLASSES.statusIdle;
         
         // Show/hide start time display
-        if (isFasting) {
+        if (isFastingNow) {
             el.startTimeDisplay.classList.remove('hidden');
             updateStartTimeDisplay();
         } else {
@@ -704,9 +724,6 @@
             }
         });
     }
-
-    // Make setDefaultDuration available globally
-    window.setDefaultDuration = setDefaultDuration;
 
     // LocalStorage helpers
     function loadData() {
@@ -907,7 +924,7 @@
         saveData(data);
     }
 
-    function saveFastToHistory(startTime, endTime, goalHours) {
+    function saveFastToHistory(startTime, endTime, goal) {
         const data = loadData() || { history: [] };
         const duration = (endTime - startTime) / MS_PER_HOUR;
 
@@ -917,7 +934,7 @@
             startTime: startTime,
             endTime: endTime,
             duration: duration,
-            goalHours: goalHours
+            goalHours: goal
         });
 
         // Keep only last 90 fasts
@@ -986,14 +1003,12 @@
         el.themeToggleBtn.addEventListener('click', toggleTheme);
         el.settingsBtn.addEventListener('click', openSettingsModal);
         el.closeModalBtn.addEventListener('click', closeSettingsModal);
-        el.settingsModal.addEventListener('click', (e) => {
-            if (e.target === el.settingsModal) closeSettingsModal();
-        });
+        addBackdropClose(el.settingsModal, closeSettingsModal);
+        
         el.historyBtn.addEventListener('click', openHistoryModal);
         el.closeHistoryBtn.addEventListener('click', closeHistoryModal);
-        el.historyModal.addEventListener('click', (e) => {
-            if (e.target === el.historyModal) closeHistoryModal();
-        });
+        addBackdropClose(el.historyModal, closeHistoryModal);
+        
         el.showZonesBtn.addEventListener('click', toggleShowZones);
         el.exportDataBtn.addEventListener('click', exportData);
         el.importFileInput.addEventListener('change', importData);
@@ -1005,11 +1020,18 @@
         });
         el.startTimeDisplay.addEventListener('click', openEditStartTimeModal);
         el.closeEditStartTimeBtn.addEventListener('click', closeEditStartTimeModal);
-        el.editStartTimeModal.addEventListener('click', (e) => {
-            if (e.target === el.editStartTimeModal) closeEditStartTimeModal();
-        });
+        addBackdropClose(el.editStartTimeModal, closeEditStartTimeModal);
+        
         el.saveStartTimeBtn.addEventListener('click', saveEditedStartTime);
         el.toastClose.addEventListener('click', hideToast);
+        
+        // Use event delegation for history list delete buttons (security improvement)
+        el.historyList.addEventListener('click', (e) => {
+            const deleteBtn = e.target.closest('[data-delete-fast]');
+            if (deleteBtn) {
+                deleteFast(parseInt(deleteBtn.dataset.deleteFast, 10));
+            }
+        });
 
         // Listen for visibility changes to check goal when user returns
         document.addEventListener('visibilitychange', () => {
@@ -1104,6 +1126,7 @@
     }
 
     // PWA Service Worker Registration
+    // Fixed: Now revokes blob URL after registration to prevent memory leak
     function registerServiceWorker() {
         if ('serviceWorker' in navigator) {
             // Create service worker inline
@@ -1129,9 +1152,9 @@
             const blob = new Blob([swCode], { type: 'application/javascript' });
             const swUrl = URL.createObjectURL(blob);
 
-            navigator.serviceWorker.register(swUrl).catch(() => {
-                // Silent fail - PWA features just won't work
-            });
+            navigator.serviceWorker.register(swUrl)
+                .then(() => URL.revokeObjectURL(swUrl))
+                .catch(() => URL.revokeObjectURL(swUrl));
         }
     }
 
@@ -1181,6 +1204,7 @@
         closeModal(el.editStartTimeModal);
     }
 
+    // Fixed: Added validation for malformed date/time input
     function saveEditedStartTime() {
         const dateValue = el.editStartDate.value;
         const timeValue = el.editStartTime.value;
@@ -1194,7 +1218,24 @@
         // Parse the new start time
         const [year, month, day] = dateValue.split('-').map(Number);
         const [hours, minutes] = timeValue.split(':').map(Number);
-        const newStartTime = new Date(year, month - 1, day, hours, minutes).getTime();
+        
+        // Validate parsed values
+        if ([year, month, day, hours, minutes].some(v => isNaN(v))) {
+            el.editStartTimeError.textContent = 'Invalid date or time format.';
+            el.editStartTimeError.classList.remove('hidden');
+            return;
+        }
+        
+        const newStartDate = new Date(year, month - 1, day, hours, minutes);
+        
+        // Validate the date object
+        if (isNaN(newStartDate.getTime())) {
+            el.editStartTimeError.textContent = 'Invalid date or time.';
+            el.editStartTimeError.classList.remove('hidden');
+            return;
+        }
+        
+        const newStartTime = newStartDate.getTime();
         
         // Validate: cannot be in the future
         if (newStartTime > Date.now()) {
@@ -1236,6 +1277,7 @@
         const sortedHistory = [...data.history].sort((a, b) => b.startTime - a.startTime);
 
         // Use a temporary container to build the HTML
+        // Fixed: Using data attributes instead of inline onclick handlers
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = sortedHistory.map(fast => {
             const startDate = new Date(fast.startTime);
@@ -1262,7 +1304,7 @@
                                 → ${endDate.toLocaleTimeString([], {hour: 'numeric', minute: '2-digit'})}
                             </div>
                         </div>
-                        <button onclick="deleteFast(${fast.id})" class="p-3 text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center" aria-label="Delete fast from ${startDate.toLocaleDateString()}">
+                        <button data-delete-fast="${fast.id}" class="p-3 text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center" aria-label="Delete fast from ${startDate.toLocaleDateString()}">
                             <svg aria-hidden="true" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                             </svg>
@@ -1286,15 +1328,13 @@
         loadHistory();
     }
 
-    // Make deleteFast available globally for onclick
-    window.deleteFast = deleteFast;
-
     function startFast(startTime, hours) {
         fastStartTime = startTime;
         goalHours = hours;
         isFasting = true;
         goalReachedNotified = false;
         lastAnnouncedMinute = -1;
+        lastDisplayedTime = '';
 
         saveCurrentFast();
         updateDisplay();
@@ -1341,6 +1381,7 @@
 
         updateStatusBadge(false, defaultDuration);
         el.timerDisplay.textContent = '00:00:00';
+        lastDisplayedTime = '00:00:00';
         el.progressCircle.style.strokeDashoffset = CIRCUMFERENCE;
         el.progressCircle.style.stroke = '#10b981'; // Reset to default emerald
 
@@ -1402,9 +1443,10 @@
         const minutes = ((totalSeconds % 3600) / 60) | 0;
         const seconds = totalSeconds % 60;
 
-        // Only update DOM if value changed
+        // Only update DOM if value changed (using cached variable instead of DOM read)
         const newTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-        if (el.timerDisplay.textContent !== newTime) {
+        if (lastDisplayedTime !== newTime) {
+            lastDisplayedTime = newTime;
             el.timerDisplay.textContent = newTime;
         }
 
