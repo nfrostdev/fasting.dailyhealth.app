@@ -1,6 +1,7 @@
 {
   "devDependencies": {
     "@tailwindcss/cli": "^4.1.18",
+    "esbuild": "^0.27.2",
     "tailwindcss": "^4.1.18"
   },
   "name": "fasting.dailyhealth.app",
@@ -8,7 +9,10 @@
   "description": "A simple, privacy-focused intermittent fasting tracker. No sign-up, no tracking.",
   "main": "index.js",
   "scripts": {
-    "build": "tailwindcss -i src/input.css -o public/styles.css --minify && node -e \"const fs=require('fs'); fs.writeFileSync('public/sw.js', fs.readFileSync('public/sw.template.js','utf8').replace('CACHE_VERSION', Date.now()))\""
+    "build:css": "tailwindcss -i src/input.css -o public/styles.css --minify",
+    "build:js": "esbuild src/app.js --minify --outfile=public/app.min.js",
+    "build:sw": "node -e \"const fs=require('fs'); fs.writeFileSync('public/sw.js', fs.readFileSync('public/sw.template.js','utf8').replace('CACHE_VERSION', Date.now()))\"",
+    "build": "npm run build:css && npm run build:js && npm run build:sw"
   },
   "keywords": [],
   "author": "",

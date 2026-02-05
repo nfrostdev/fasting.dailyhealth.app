@@ -15,3 +15,4 @@ Thumbs.db
 # Build stuff
 public/styles.css
 public/sw.js
+public/app.min.js
