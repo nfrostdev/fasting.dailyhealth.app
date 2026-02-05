@@ -12,6 +12,10 @@ const ASSETS = [
     '/icons/icon-512.png',
     '/icons/icon-maskable-192.png',
     '/icons/icon-maskable-512.png',
+    '/fonts/inter-v20-latin-regular.woff2',
+    '/fonts/inter-v20-latin-500.woff2',
+    '/fonts/inter-v20-latin-600.woff2',
+    '/fonts/inter-v20-latin-700.woff2',
     '/app.js',
 ];
 
