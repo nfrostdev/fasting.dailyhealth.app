@@ -9,6 +9,7 @@
   "description": "A simple, privacy-focused intermittent fasting tracker. No sign-up, no tracking.",
   "main": "index.js",
   "scripts": {
+    "dev": "npx serve public",
     "build:css": "tailwindcss -i src/input.css -o public/styles.css --minify",
     "build:js": "esbuild src/app.js --minify --outfile=public/app.min.js",
     "build:sw": "node -e \"const fs=require('fs'); fs.writeFileSync('public/sw.js', fs.readFileSync('public/sw.template.js','utf8').replace('CACHE_VERSION', Date.now()))\"",
