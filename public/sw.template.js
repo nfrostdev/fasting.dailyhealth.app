@@ -17,6 +17,7 @@ const ASSETS = [
     '/fonts/inter-v20-latin-600.woff2',
     '/fonts/inter-v20-latin-700.woff2',
     '/app.js',
+    '/robots.txt'
 ];
 
 self.addEventListener('install', (e) => {
